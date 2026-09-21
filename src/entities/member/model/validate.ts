@@ -39,7 +39,7 @@ export type ValidationResult =
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
-const STAGES: MemberStage[] = ["lead", "active", "frozen", "churned"];
+const STAGES: MemberStage[] = ["active", "frozen"];
 
 function clean(value: unknown): string | null {
   if (typeof value !== "string") return null;
@@ -90,7 +90,7 @@ export function validateMemberInput(raw: Partial<MemberInput>): ValidationResult
     errors.emergencyContactPhone = "Not a valid phone number.";
   }
 
-  const stage = raw.stage ?? "lead";
+  const stage = raw.stage ?? "active";
   if (!STAGES.includes(stage)) {
     errors.stage = `Stage must be one of: ${STAGES.join(", ")}.`;
   }

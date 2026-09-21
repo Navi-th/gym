@@ -1,4 +1,4 @@
-import { AlertTriangle, UserPlus, Users, UserX } from "lucide-react";
+import { AlertTriangle, Users, UserX } from "lucide-react";
 import { Card, CardContent } from "@/shared/ui";
 import type { MemberStatus } from "@/entities/member";
 
@@ -12,32 +12,32 @@ export function MemberStats({ counts }: { counts: Record<MemberStatus, number> }
   const total = Object.values(counts).reduce((sum, n) => sum + n, 0);
 
   const tiles = [
-    { label: "Total members", value: total, icon: Users, tone: "text-slate-300" },
-    { label: "Active", value: counts.active, icon: Users, tone: "text-emerald-300" },
+    { label: "Total members", value: total, icon: Users, tone: "text-zinc-900", iconTone: "text-zinc-700" },
+    { label: "Active", value: counts.active, icon: Users, tone: "text-zinc-900", iconTone: "text-emerald-600" },
     {
       label: "Expiring soon",
       value: counts.expiring_soon,
       icon: AlertTriangle,
-      tone: "text-amber-300",
+      tone: "text-zinc-900",
+      iconTone: "text-amber-600",
     },
-    { label: "Lapsed", value: counts.expired, icon: UserX, tone: "text-rose-300" },
-    { label: "Leads", value: counts.lead, icon: UserPlus, tone: "text-slate-400" },
+    { label: "Lapsed", value: counts.expired, icon: UserX, tone: "text-zinc-900", iconTone: "text-rose-600" },
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-4">
       {tiles.map((tile) => {
         const Icon = tile.icon;
         return (
-          <Card key={tile.label}>
-            <CardContent className="p-4">
+          <Card key={tile.label} className="border-zinc-200/90 bg-white shadow-sm">
+            <CardContent className="p-3.5 sm:p-5">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-zinc-500 truncate pr-1">
                   {tile.label}
                 </span>
-                <Icon className={`h-4 w-4 ${tile.tone}`} />
+                <Icon className={`h-4 w-4 shrink-0 ${tile.iconTone}`} />
               </div>
-              <div className={`mt-2 text-3xl font-black ${tile.tone}`}>{tile.value}</div>
+              <div className="mt-2 text-2xl sm:text-3xl font-black text-zinc-900 tracking-tight">{tile.value}</div>
             </CardContent>
           </Card>
         );

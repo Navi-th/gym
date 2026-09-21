@@ -11,14 +11,12 @@ import {
 /** Fixed clock so these never depend on the day they run. */
 const TODAY = new Date("2026-09-21T00:00:00Z");
 
-const statusAt = (stage: "lead" | "active" | "frozen" | "churned", planEnd?: string | null) =>
+const statusAt = (stage: "active" | "frozen", planEnd?: string | null) =>
   deriveMemberStatus({ stage, planEnd, today: TODAY });
 
 describe("deriveMemberStatus", () => {
   it("passes manual stages through untouched, whatever the dates say", () => {
-    expect(statusAt("lead", "2027-01-01")).toBe("lead");
     expect(statusAt("frozen", "2027-01-01")).toBe("frozen");
-    expect(statusAt("churned", "2027-01-01")).toBe("churned");
   });
 
   it("reports active when expiry is comfortably ahead", () => {
@@ -46,10 +44,6 @@ describe("deriveMemberStatus", () => {
   });
 
   it("REGRESSION: honours an explicit active stage with no end date", () => {
-    // The bug this test exists for: a member created with stage=active and no
-    // plan dates (Module 5 attaches those) was stored as active but rendered
-    // as "Lead" everywhere, contradicting the admin who had just chosen it.
-    // An open-ended membership is real.
     expect(statusAt("active", null)).toBe("active");
     expect(statusAt("active", undefined)).toBe("active");
     expect(statusAt("active", "")).toBe("active");
@@ -92,7 +86,6 @@ describe("countMembersByStatus", () => {
       { status: "expiring_soon" as const },
       { status: "expired" as const },
       { status: "frozen" as const },
-      { status: "lead" as const },
     ];
     const counts = countMembersByStatus(list);
     expect(counts).toMatchObject({
@@ -100,8 +93,6 @@ describe("countMembersByStatus", () => {
       expiring_soon: 1,
       expired: 1,
       frozen: 1,
-      lead: 1,
-      churned: 0,
     });
     expect(Object.values(counts).reduce((a, b) => a + b, 0)).toBe(list.length);
   });
@@ -113,7 +104,6 @@ describe("selectRenewalsQueue", () => {
       { id: "a", status: "active" as const, planEnd: "2027-01-01" },
       { id: "b", status: "expiring_soon" as const, planEnd: "2026-09-26" },
       { id: "c", status: "expired" as const, planEnd: "2026-09-18" },
-      { id: "d", status: "lead" as const, planEnd: null },
       { id: "e", status: "frozen" as const, planEnd: "2026-10-01" },
     ];
     expect(selectRenewalsQueue(list).map((m) => m.id)).toEqual(["c", "b"]);

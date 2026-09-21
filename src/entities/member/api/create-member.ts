@@ -31,7 +31,7 @@ export async function createMember(input: ValidMemberInput): Promise<Member> {
       dob: input.dob ?? null,
       emergencyContactName: input.emergencyContactName ?? null,
       emergencyContactPhone: input.emergencyContactPhone ?? null,
-      stage: input.stage ?? "lead",
+      stage: input.stage ?? "active",
       notes: input.notes ?? null,
       whatsappOptIn: input.whatsappOptIn ?? false,
       optInAt: input.whatsappOptIn ? now : null,

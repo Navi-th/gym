@@ -59,7 +59,7 @@ export function PlanRetireToggle({
       <Button size="sm" variant={isActive ? "secondary" : "primary"} onClick={toggle} disabled={busy}>
         {busy ? "…" : isActive ? "Retire" : "Restore"}
       </Button>
-      {error && <span className="text-[11px] text-rose-400">{error}</span>}
+      {error && <span className="text-[11px] font-semibold text-rose-600">{error}</span>}
     </div>
   );
 }

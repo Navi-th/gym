@@ -64,12 +64,12 @@ INSERT OR REPLACE INTO members (
 
   ('mem_0006', 'PULSE-0006', 'Test Member Six', '+919000000006', 'six@example.com', 'male', '1999-05-30',
    NULL, NULL,
-   NULL, NULL, NULL, 'lead',
-   'Seed row - synthetic. Walk-in enquiry, not yet a member.',
+   NULL, NULL, NULL, 'active',
+   'Seed row - synthetic. New member.',
    0, NULL, date('now','-2 days'));
 
 -- Subscriptions ------------------------------------------------------------
--- Only for members who actually started a plan. mem_0006 is a lead with none.
+-- Only for members with explicit running subscriptions. mem_0006 is a new member with none.
 INSERT OR REPLACE INTO subscriptions (
   id, member_id, plan_id, start_date, end_date, status, price_cents_charged, freeze_days
 ) VALUES

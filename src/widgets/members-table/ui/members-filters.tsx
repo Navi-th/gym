@@ -6,8 +6,6 @@ const FILTERABLE: MemberStatus[] = [
   "expiring_soon",
   "expired",
   "frozen",
-  "lead",
-  "churned",
 ];
 
 /**
@@ -37,7 +35,7 @@ export function MembersFilters({ q, status }: { q: string; status: string }) {
         <option value="all">All statuses</option>
         {FILTERABLE.map((value) => (
           <option key={value} value={value}>
-            {STATUS_META[value].label}
+            {STATUS_META[value]?.label ?? value}
           </option>
         ))}
       </Select>

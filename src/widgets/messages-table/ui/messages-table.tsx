@@ -45,29 +45,29 @@ export function MessagesTable({ messages }: { messages: MessageWithMember[] }) {
                 <TR key={message.id}>
                   <TD>
                     <div className="min-w-0">
-                      <div className="truncate font-semibold text-white">
+                      <div className="truncate font-bold text-zinc-900">
                         {message.memberName}
                       </div>
-                      <div className="text-[11px] text-slate-500">{message.toPhone}</div>
+                      <div className="text-[11px] font-semibold text-zinc-500">{message.toPhone}</div>
                     </div>
                   </TD>
-                  <TD className="whitespace-nowrap text-xs text-slate-400">
+                  <TD className="whitespace-nowrap text-xs text-zinc-600 font-medium">
                     {message.templateKey}
                   </TD>
-                  <TD className="max-w-md text-xs text-slate-300">
+                  <TD className="max-w-md text-xs text-zinc-700">
                     <span className="line-clamp-2">{message.renderedBody}</span>
                   </TD>
-                  <TD className="whitespace-nowrap text-xs text-slate-400">
+                  <TD className="whitespace-nowrap text-xs text-zinc-600 font-medium">
                     {formatDate(message.sentAt ?? message.createdAt)}
                   </TD>
                   <TD>
                     <span
-                      className={`inline-flex items-center whitespace-nowrap rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${
+                      className={`inline-flex items-center whitespace-nowrap rounded-full border px-2.5 py-0.5 text-[11px] font-black ${
                         message.status === "sent"
-                          ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-300"
                           : message.status === "failed"
-                            ? "bg-rose-500/15 text-rose-300 border-rose-500/30"
-                            : "bg-slate-700/30 text-slate-400 border-slate-600/40"
+                            ? "bg-rose-50 text-rose-700 border-rose-300"
+                            : "bg-zinc-100 text-zinc-600 border-zinc-300"
                       }`}
                     >
                       {message.status}

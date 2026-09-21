@@ -5,18 +5,18 @@ type Size = "sm" | "md";
 
 const VARIANTS: Record<Variant, string> = {
   primary:
-    "bg-rose-600 text-white hover:bg-rose-500 shadow-lg shadow-rose-900/30 focus-visible:outline-rose-500",
+    "bg-black text-white hover:bg-zinc-800 shadow-md shadow-black/10 focus-visible:outline-black font-black",
   secondary:
-    "border border-slate-700 bg-slate-800/60 text-slate-200 hover:bg-slate-700/60 focus-visible:outline-slate-500",
+    "border border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-100 hover:border-zinc-400 focus-visible:outline-zinc-500 font-bold",
   ghost:
-    "text-slate-300 hover:bg-slate-800/60 hover:text-white focus-visible:outline-slate-500",
+    "text-zinc-700 hover:bg-zinc-200/70 hover:text-black focus-visible:outline-zinc-500",
   danger:
-    "bg-rose-950/60 border border-rose-800/60 text-rose-300 hover:bg-rose-900/50 focus-visible:outline-rose-500",
+    "bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 focus-visible:outline-rose-600 font-bold",
 };
 
 const SIZES: Record<Size, string> = {
-  sm: "h-8 px-3 text-xs rounded-lg gap-1.5",
-  md: "h-10 px-4 text-sm rounded-xl gap-2",
+  sm: "h-9 px-3.5 text-xs rounded-lg gap-1.5 min-h-[36px]",
+  md: "h-11 sm:h-10 px-4 text-xs sm:text-sm rounded-xl gap-2 min-h-[44px] sm:min-h-[40px]",
 };
 
 export interface ButtonProps

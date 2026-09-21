@@ -64,23 +64,23 @@ export function PlansTable({
             ) : (
               plans.map((plan) => (
                 <TR key={plan.id} className={plan.isActive ? undefined : "opacity-60"}>
-                  <TD className="font-semibold text-white">{plan.name}</TD>
-                  <TD className="text-slate-400">
+                  <TD className="font-bold text-zinc-900">{plan.name}</TD>
+                  <TD className="text-zinc-500 font-medium">
                     {billingPeriodLabel(plan.billingPeriod)}
                   </TD>
-                  <TD className="text-right font-bold text-rose-300">
+                  <TD className="text-right font-black text-zinc-900">
                     {formatMoneyCompact(plan.priceCents)}
                   </TD>
                   {manage && (
-                    <TD className="text-right text-slate-400">{plan.durationDays}</TD>
+                    <TD className="text-right text-zinc-500 font-medium">{plan.durationDays}</TD>
                   )}
                   {manage && (
                     <TD>
                       <span
-                        className={`inline-flex items-center whitespace-nowrap rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${
+                        className={`inline-flex items-center whitespace-nowrap rounded-full border px-2.5 py-0.5 text-[11px] font-black ${
                           plan.isActive
-                            ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
-                            : "bg-slate-700/30 text-slate-400 border-slate-600/40"
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-300"
+                            : "bg-zinc-100 text-zinc-600 border-zinc-300"
                         }`}
                       >
                         {plan.isActive ? "On sale" : "Retired"}
@@ -92,7 +92,7 @@ export function PlansTable({
                       <div className="flex items-center justify-end gap-2">
                         <Link
                           href={`/admin/plans/${plan.id}`}
-                          className="text-xs font-bold text-rose-400 hover:text-rose-300"
+                          className="text-xs font-black text-black hover:underline"
                         >
                           Edit
                         </Link>

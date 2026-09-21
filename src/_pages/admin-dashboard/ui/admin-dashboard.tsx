@@ -12,7 +12,6 @@ import {
 } from "@/entities/member";
 import { getPlans, planNameById } from "@/entities/plan";
 import { MemberStats } from "@/widgets/member-stats";
-import { PlansTable } from "@/widgets/plans-table";
 import { RenewalsQueue } from "@/widgets/renewals-queue";
 
 export async function AdminDashboardPage() {
@@ -23,21 +22,17 @@ export async function AdminDashboardPage() {
   const planNames = planNameById(plans);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <div className="mx-auto max-w-6xl space-y-5 sm:space-y-8">
       <header>
-        <h1 className="text-2xl font-black tracking-tight text-white">Dashboard</h1>
-        <p className="mt-1 text-sm text-slate-400">
-          Live from Cloudflare D1. Membership status is derived from expiry dates,
-          not stored.
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-900">Dashboard</h1>
+        <p className="mt-1 text-xs sm:text-sm text-zinc-500 font-medium leading-relaxed">
+          Live from Cloudflare D1. Membership status is derived from expiry dates.
         </p>
       </header>
 
       <MemberStats counts={counts} />
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <PlansTable plans={plans} />
-        <RenewalsQueue members={queue} planNameById={planNames} />
-      </div>
+      <RenewalsQueue members={queue} planNameById={planNames} />
     </div>
   );
 }

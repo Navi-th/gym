@@ -34,10 +34,8 @@ type FormValues = {
 };
 
 const STAGES: { value: MemberStage; label: string }[] = [
-  { value: "lead", label: "Lead" },
   { value: "active", label: "Active" },
   { value: "frozen", label: "Frozen" },
-  { value: "churned", label: "Churned" },
 ];
 
 function initialValues(member?: Member): FormValues {
@@ -49,7 +47,7 @@ function initialValues(member?: Member): FormValues {
     dob: member?.dob ?? "",
     emergencyContactName: member?.emergencyContactName ?? "",
     emergencyContactPhone: member?.emergencyContactPhone ?? "",
-    stage: (member?.stage as MemberStage) ?? "lead",
+    stage: (member?.stage as MemberStage) ?? "active",
     notes: member?.notes ?? "",
     whatsappOptIn: member?.whatsappOptIn ?? false,
   };
@@ -95,7 +93,7 @@ export function MemberForm({ mode, member }: { mode: Mode; member?: Member }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {formError && (
-        <div className="rounded-xl border border-rose-800/60 bg-rose-950/40 px-4 py-3 text-sm text-rose-200">
+        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 font-medium">
           {formError}
         </div>
       )}
@@ -202,15 +200,15 @@ export function MemberForm({ mode, member }: { mode: Mode; member?: Member }) {
         />
       </Field>
 
-      <label className="flex items-start gap-3 rounded-xl border border-slate-800 bg-slate-900/40 p-4">
+      <label className="flex items-start gap-3.5 rounded-xl border border-zinc-200 bg-white p-4 cursor-pointer hover:bg-zinc-50 transition-colors shadow-sm">
         <input
           type="checkbox"
           checked={values.whatsappOptIn}
           onChange={(e) => set("whatsappOptIn", e.target.checked)}
-          className="mt-0.5 h-4 w-4 accent-rose-600"
+          className="mt-0.5 h-5 w-5 accent-black rounded shrink-0 cursor-pointer"
         />
-        <span className="text-xs leading-relaxed text-slate-300">
-          <span className="font-bold text-white">WhatsApp consent given.</span> Meta
+        <span className="text-xs sm:text-sm leading-relaxed text-zinc-600">
+          <span className="font-extrabold text-zinc-900">WhatsApp consent given.</span> Meta
           requires documented opt-in before business-initiated messages. The timestamp
           of the original consent is preserved across edits.
         </span>

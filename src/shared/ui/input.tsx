@@ -1,9 +1,9 @@
 import { cn } from "@/shared/lib";
 
 const FIELD_BASE =
-  "w-full rounded-xl border border-slate-700/60 bg-slate-900/80 px-3.5 py-2.5 text-sm text-white " +
-  "placeholder:text-slate-500 transition-colors focus:border-rose-500 focus:outline-none " +
-  "disabled:cursor-not-allowed disabled:opacity-50";
+  "w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-xs sm:text-sm text-zinc-900 " +
+  "placeholder:text-zinc-400 transition-all focus:border-black focus:ring-1 focus:ring-black focus:outline-none " +
+  "disabled:cursor-not-allowed disabled:bg-zinc-100 disabled:opacity-50 min-h-[44px]";
 
 export function Label({
   className,
@@ -11,7 +11,7 @@ export function Label({
 }: React.LabelHTMLAttributes<HTMLLabelElement>) {
   return (
     <label
-      className={cn("mb-1.5 block text-xs font-semibold text-slate-300", className)}
+      className={cn("mb-2 block text-xs font-bold uppercase tracking-wider text-zinc-700", className)}
       {...props}
     />
   );
@@ -25,7 +25,7 @@ export function Textarea({
   className,
   ...props
 }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea className={cn(FIELD_BASE, "min-h-20 resize-y", className)} {...props} />;
+  return <textarea className={cn(FIELD_BASE, "min-h-24 resize-y", className)} {...props} />;
 }
 
 export function Select({
@@ -34,7 +34,7 @@ export function Select({
   ...props
 }: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
-    <select className={cn(FIELD_BASE, "appearance-none pr-9", className)} {...props}>
+    <select className={cn(FIELD_BASE, "appearance-none pr-9 bg-[right_1rem_center]", className)} {...props}>
       {children}
     </select>
   );
@@ -61,9 +61,9 @@ export function Field({
       <Label htmlFor={htmlFor}>{label}</Label>
       {children}
       {error ? (
-        <p className="mt-1.5 text-[11px] font-semibold text-rose-400">{error}</p>
+        <p className="mt-1.5 text-xs font-semibold text-rose-600">{error}</p>
       ) : hint ? (
-        <p className="mt-1.5 text-[11px] text-slate-500">{hint}</p>
+        <p className="mt-1.5 text-xs text-zinc-500">{hint}</p>
       ) : null}
     </div>
   );

@@ -21,7 +21,7 @@ describe("validateMemberInput - acceptance", () => {
     const value = valueOf(MINIMAL);
     expect(value.fullName).toBe("Aarav Sharma");
     expect(value.phone).toBe("+919876543210");
-    expect(value.stage).toBe("lead");
+    expect(value.stage).toBe("active");
   });
 
   it("normalises the phone on the way through", () => {
@@ -47,7 +47,7 @@ describe("validateMemberInput - acceptance", () => {
   });
 
   it("accepts each valid stage", () => {
-    for (const stage of ["lead", "active", "frozen", "churned"] as const) {
+    for (const stage of ["active", "frozen"] as const) {
       expect(valueOf({ ...MINIMAL, stage }).stage).toBe(stage);
     }
   });

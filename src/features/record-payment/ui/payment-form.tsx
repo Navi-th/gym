@@ -104,12 +104,12 @@ export function PaymentForm({
       />
 
       {subscriptionId && (
-        <label className="flex items-center gap-1.5 text-[11px] text-slate-400">
+        <label className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-600">
           <input
             type="checkbox"
             checked={renew}
             onChange={(e) => setRenew(e.target.checked)}
-            className="h-3.5 w-3.5 accent-rose-600"
+            className="h-3.5 w-3.5 accent-black rounded"
           />
           {suggestedDurationDays ? `Renew ${suggestedDurationDays} days` : "Renew"}
         </label>
@@ -119,7 +119,7 @@ export function PaymentForm({
         {saving ? "Saving…" : "Record"}
       </Button>
 
-      {error && <span className="text-[11px] font-semibold text-rose-400">{error}</span>}
+      {error && <span className="text-[11px] font-semibold text-rose-600">{error}</span>}
     </form>
   );
 }

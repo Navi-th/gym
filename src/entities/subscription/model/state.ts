@@ -38,22 +38,22 @@ export const SUBSCRIPTION_STATE_META: Record<
 > = {
   active: {
     label: "Active",
-    className: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+    className: "bg-emerald-50 text-emerald-700 border-emerald-300 font-black",
   },
   due: {
     label: "Due soon",
-    className: "bg-amber-500/15 text-amber-300 border-amber-500/30",
+    className: "bg-amber-50 text-amber-800 border-amber-300 font-black",
   },
   lapsed: {
     label: "Lapsed",
-    className: "bg-rose-500/15 text-rose-300 border-rose-500/30",
+    className: "bg-rose-50 text-rose-700 border-rose-300 font-black",
   },
   frozen: {
     label: "Frozen",
-    className: "bg-sky-500/15 text-sky-300 border-sky-500/30",
+    className: "bg-sky-50 text-sky-700 border-sky-300 font-black",
   },
   cancelled: {
     label: "Cancelled",
-    className: "bg-slate-700/30 text-slate-400 border-slate-600/40",
+    className: "bg-zinc-100 text-zinc-600 border-zinc-300 font-black",
   },
 };

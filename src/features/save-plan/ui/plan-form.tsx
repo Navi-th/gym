@@ -80,13 +80,13 @@ export function PlanForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {formError && (
-        <div className="rounded-xl border border-rose-800/60 bg-rose-950/40 px-4 py-3 text-sm text-rose-200">
+        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 font-medium">
           {formError}
         </div>
       )}
 
       {mode === "edit" && activeSubscriptions > 0 && (
-        <div className="rounded-xl border border-sky-800/50 bg-sky-950/30 px-4 py-3 text-xs text-sky-200">
+        <div className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-xs text-sky-900 leading-relaxed">
           <span className="font-bold">
             {activeSubscriptions}{" "}
             {activeSubscriptions === 1 ? "subscription references" : "subscriptions reference"}
@@ -150,15 +150,15 @@ export function PlanForm({
         </Field>
       </div>
 
-      <label className="flex items-start gap-3 rounded-xl border border-slate-800 bg-slate-900/40 p-4">
+      <label className="flex items-start gap-3 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm cursor-pointer hover:bg-zinc-50 transition-colors">
         <input
           type="checkbox"
           checked={isActive}
           onChange={(e) => setIsActive(e.target.checked)}
-          className="mt-0.5 h-4 w-4 accent-rose-600"
+          className="mt-0.5 h-4 w-4 accent-black rounded cursor-pointer"
         />
-        <span className="text-xs leading-relaxed text-slate-300">
-          <span className="font-bold text-white">Available to sell.</span> Unchecking retires
+        <span className="text-xs leading-relaxed text-zinc-600">
+          <span className="font-bold text-zinc-900">Available to sell.</span> Unchecking retires
           the plan: it disappears from new assignments but every existing subscription stays
           exactly as it is. Retiring is the closest thing to deleting a plan here — a real
           delete would orphan member history.

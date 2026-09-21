@@ -53,14 +53,14 @@ export async function MemberFormPage({ memberId }: { memberId?: string }) {
       <header>
         <Link
           href="/admin/members"
-          className="text-xs font-bold text-slate-500 transition-colors hover:text-white"
+          className="text-xs font-bold text-zinc-500 transition-colors hover:text-black inline-flex items-center gap-1"
         >
           ← Members
         </Link>
-        <h1 className="mt-2 text-2xl font-black tracking-tight text-white">
+        <h1 className="mt-2 text-2xl sm:text-3xl font-black tracking-tight text-zinc-900">
           {member ? member.fullName : "Add member"}
         </h1>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="mt-1 text-xs sm:text-sm text-zinc-500">
           {member ? `Member code ${member.memberCode}` : "Details can be edited later."}
         </p>
       </header>
@@ -69,15 +69,15 @@ export async function MemberFormPage({ memberId }: { memberId?: string }) {
         <Card>
           <CardContent className="flex flex-wrap items-center justify-between gap-4 p-4">
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs">
-              <span className="text-slate-500">
+              <span className="text-zinc-500 font-medium">
                 Phone{" "}
-                <span className="ml-1.5 font-semibold text-slate-200">
+                <span className="ml-1.5 font-bold text-zinc-900">
                   {formatPhone(member.phone)}
                 </span>
               </span>
-              <span className="text-slate-500">
+              <span className="text-zinc-500 font-medium">
                 Expiry{" "}
-                <span className="ml-1.5 font-semibold text-slate-200">
+                <span className="ml-1.5 font-bold text-zinc-900">
                   {formatDate(member.planEnd)}
                 </span>
               </span>
@@ -95,28 +95,28 @@ export async function MemberFormPage({ memberId }: { memberId?: string }) {
             <CardDescription>
               {subscription
                 ? `Covered until ${formatDate(subscription.endDate)}.`
-                : "No running subscription. Member status is driven by plan dates, so this member shows as a lead."}
+                : "No running subscription. Member status is driven by plan dates."}
             </CardDescription>
           </CardHeader>
           <CardContent>
             {subscription && subscriptionState ? (
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs">
-                  <span className="text-slate-500">
+                  <span className="text-zinc-500 font-medium">
                     Plan{" "}
-                    <span className="ml-1.5 font-semibold text-slate-200">
+                    <span className="ml-1.5 font-bold text-zinc-900">
                       {planNames.get(subscription.planId) ?? "—"}
                     </span>
                   </span>
-                  <span className="text-slate-500">
+                  <span className="text-zinc-500 font-medium">
                     Current period{" "}
-                    <span className="ml-1.5 font-semibold text-slate-200">
+                    <span className="ml-1.5 font-bold text-zinc-900">
                       {formatDate(subscription.startDate)} → {formatDate(subscription.endDate)}
                     </span>
                   </span>
-                  <span className="text-slate-500">
+                  <span className="text-zinc-500 font-medium">
                     Renewal price{" "}
-                    <span className="ml-1.5 font-semibold text-slate-200">
+                    <span className="ml-1.5 font-bold text-zinc-900">
                       {formatMoneyCompact(subscription.priceCentsCharged)}
                     </span>
                   </span>

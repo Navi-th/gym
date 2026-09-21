@@ -82,7 +82,7 @@ export function SubscriptionActions({ subscriptionId }: { subscriptionId: string
         </Button>
       )}
 
-      {error && <span className="text-xs font-semibold text-rose-400">{error}</span>}
+      {error && <span className="text-xs font-semibold text-rose-600">{error}</span>}
     </div>
   );
 }

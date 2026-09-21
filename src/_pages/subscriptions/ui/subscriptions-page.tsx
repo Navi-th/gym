@@ -14,8 +14,8 @@ export async function SubscriptionsPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <header>
-        <h1 className="text-2xl font-black tracking-tight text-white">Subscriptions</h1>
-        <p className="mt-1 text-sm text-slate-400">
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-900">Subscriptions</h1>
+        <p className="mt-1 text-xs sm:text-sm text-zinc-500 font-medium">
           {subscriptions.length}{" "}
           {subscriptions.length === 1 ? "subscription" : "subscriptions"}
           {needingAction > 0 ? ` · ${needingAction} needing attention` : ""}
@@ -42,13 +42,13 @@ export async function SubscriptionsPage() {
             .map((plan) => (
               <div
                 key={plan.id}
-                className="rounded-xl border border-slate-800 bg-slate-900/50 px-4 py-3"
+                className="rounded-xl border border-zinc-200 bg-white px-4 py-3 shadow-sm"
               >
-                <div className="text-xs font-bold text-white">{plan.name}</div>
-                <div className="mt-0.5 text-lg font-black text-rose-300">
+                <div className="text-xs font-bold text-zinc-900">{plan.name}</div>
+                <div className="mt-0.5 text-lg font-black text-zinc-900">
                   {formatMoneyCompact(plan.priceCents)}
                 </div>
-                <div className="text-[11px] text-slate-500">
+                <div className="text-[11px] font-medium text-zinc-500">
                   {plan.durationDays} days · {plan.billingPeriod}
                 </div>
               </div>

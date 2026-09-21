@@ -35,26 +35,26 @@ export function MembersTable({ members }: { members: MemberWithStatus[] }) {
             <TR key={member.id}>
               <TD>
                 <div className="flex items-center gap-2.5">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-800 text-[10px] font-bold text-slate-300">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-zinc-100 border border-zinc-200 text-[10px] font-black text-zinc-900">
                     {initials(member.fullName)}
                   </span>
                   <div className="min-w-0">
                     <Link
                       href={`/admin/members/${member.id}`}
-                      className="truncate font-semibold text-white hover:text-rose-300"
+                      className="truncate font-bold text-zinc-900 hover:text-black transition-colors"
                     >
                       {member.fullName}
                     </Link>
-                    <div className="text-[11px] text-slate-500">
+                    <div className="text-[11px] font-semibold text-zinc-500">
                       {member.memberCode}
                     </div>
                   </div>
                 </div>
               </TD>
-              <TD className="whitespace-nowrap text-slate-300">
+              <TD className="whitespace-nowrap text-zinc-700">
                 {formatPhone(member.phone)}
               </TD>
-              <TD className="whitespace-nowrap text-slate-300">
+              <TD className="whitespace-nowrap text-zinc-700">
                 {formatDate(member.planEnd)}
               </TD>
               <TD>
@@ -63,9 +63,9 @@ export function MembersTable({ members }: { members: MemberWithStatus[] }) {
               <TD className="text-right">
                 <Link
                   href={`/admin/members/${member.id}`}
-                  className="text-xs font-bold text-rose-400 hover:text-rose-300"
+                  className="text-xs font-black text-black hover:underline underline-offset-2"
                 >
-                  {member.status === "lead" ? "Convert" : "Manage"}
+                  Manage
                 </Link>
               </TD>
             </TR>

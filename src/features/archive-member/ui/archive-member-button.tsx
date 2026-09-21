@@ -52,7 +52,7 @@ export function ArchiveMemberButton({
       <Button variant="danger" onClick={handleArchive} disabled={busy}>
         {busy ? "Archiving…" : "Archive member"}
       </Button>
-      {error && <span className="text-xs text-rose-400">{error}</span>}
+      {error && <span className="text-xs font-semibold text-rose-600">{error}</span>}
     </div>
   );
 }

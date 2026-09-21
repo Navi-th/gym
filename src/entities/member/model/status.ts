@@ -1,8 +1,8 @@
 /**
  * Member lifecycle status.
  *
- * `stage` in the database holds only MANUAL states (lead / active / frozen /
- * churned). Whether a member is currently active, about to lapse, or already
+ * `stage` in the database holds only MANUAL states (active / frozen).
+ * Whether a member is currently active, about to lapse, or already
  * lapsed is DERIVED from `plan_end` — so there is no status column to drift out
  * of sync, and no cron job is needed to flip anyone to "expired" overnight.
  *
@@ -14,7 +14,7 @@
 
 export const EXPIRING_SOON_DAYS = 7;
 
-export type MemberStage = "lead" | "active" | "frozen" | "churned";
+export type MemberStage = "active" | "frozen";
 export type MemberStatus = MemberStage | "expiring_soon" | "expired";
 
 import { addDays, daysBetween, toDateOnly } from "@/shared/lib";
@@ -35,16 +35,11 @@ export function deriveMemberStatus(input: {
   const { stage, planEnd, today = new Date() } = input;
 
   // Manual states win outright — they are set by a human, not by dates.
-  if (stage === "lead" || stage === "churned" || stage === "frozen") return stage;
+  if (stage === "frozen") return stage;
 
   // Reaching here, `stage` is "active". With no usable end date there is
   // nothing for the date rules to say, so honour the explicit stage: an
   // open-ended membership is real.
-  //
-  // Downgrading it to "lead" would contradict the value a human just
-  // deliberately chose. That bug was live until an end-to-end test created a
-  // member with stage=active and no plan dates: the API stored "active"
-  // while every screen rendered "Lead".
   //
   // Module 5 sets plan_end when a plan is attached, after which the date
   // rules take over.
@@ -67,27 +62,19 @@ export function daysUntilExpiry(planEnd: string, today: Date = new Date()): numb
 export const STATUS_META: Record<MemberStatus, { label: string; className: string }> = {
   active: {
     label: "Active",
-    className: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+    className: "bg-emerald-50 text-emerald-700 border-emerald-300 font-black",
   },
   expiring_soon: {
     label: "Expiring soon",
-    className: "bg-amber-500/15 text-amber-300 border-amber-500/30",
+    className: "bg-amber-50 text-amber-800 border-amber-300 font-black",
   },
   expired: {
     label: "Expired",
-    className: "bg-rose-500/15 text-rose-300 border-rose-500/30",
+    className: "bg-rose-50 text-rose-700 border-rose-300 font-black",
   },
   frozen: {
     label: "Frozen",
-    className: "bg-sky-500/15 text-sky-300 border-sky-500/30",
-  },
-  lead: {
-    label: "Lead",
-    className: "bg-slate-500/15 text-slate-300 border-slate-500/30",
-  },
-  churned: {
-    label: "Churned",
-    className: "bg-slate-700/30 text-slate-400 border-slate-600/40",
+    className: "bg-sky-50 text-sky-700 border-sky-300 font-black",
   },
 };
 
@@ -106,8 +93,6 @@ export function countMembersByStatus(list: HasStatus[]): Record<MemberStatus, nu
     expiring_soon: 0,
     expired: 0,
     frozen: 0,
-    lead: 0,
-    churned: 0,
   };
   for (const m of list) counts[m.status] += 1;
   return counts;

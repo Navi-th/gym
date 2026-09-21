@@ -47,19 +47,18 @@ export async function PaymentsPage() {
   });
 
   const stats = [
-    { label: "Collected this month", value: formatMoneyCompact(totals.monthCents), tone: "text-emerald-300" },
-    { label: "Collected all time", value: formatMoneyCompact(totals.allTimeCents), tone: "text-slate-200" },
-    { label: "Payments recorded", value: String(totals.paymentCount), tone: "text-slate-300" },
-    { label: "In arrears", value: String(dues.length), tone: dues.length > 0 ? "text-rose-300" : "text-emerald-300" },
+    { label: "Collected this month", value: formatMoneyCompact(totals.monthCents), tone: "text-zinc-900" },
+    { label: "Collected all time", value: formatMoneyCompact(totals.allTimeCents), tone: "text-zinc-900" },
+    { label: "Payments recorded", value: String(totals.paymentCount), tone: "text-zinc-900" },
+    { label: "In arrears", value: String(dues.length), tone: dues.length > 0 ? "text-rose-600" : "text-emerald-600" },
   ];
 
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <header>
-        <h1 className="text-2xl font-black tracking-tight text-white">Payments</h1>
-        <p className="mt-1 text-sm text-slate-400">
-          Totals reflect money recorded, which is not the same as revenue earned — cash
-          taken today can cover a future period.
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-900">Payments</h1>
+        <p className="mt-1 text-xs sm:text-sm text-zinc-500 font-medium">
+          Totals reflect money recorded, which is not the same as revenue earned.
         </p>
       </header>
 
@@ -67,10 +66,10 @@ export async function PaymentsPage() {
         {stats.map((stat) => (
           <Card key={stat.label}>
             <CardContent className="p-4">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+              <div className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-zinc-500">
                 {stat.label}
               </div>
-              <div className={`mt-2 text-2xl font-black ${stat.tone}`}>{stat.value}</div>
+              <div className={`mt-2 text-2xl sm:text-3xl font-black ${stat.tone}`}>{stat.value}</div>
             </CardContent>
           </Card>
         ))}

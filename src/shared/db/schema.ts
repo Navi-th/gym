@@ -11,7 +11,7 @@ import { sqliteTable, text, integer, index } from "drizzle-orm/sqlite-core";
  * - `is_active` / `whatsapp_opt_in` are integers used as booleans (0/1).
  *
  * Lifecycle note: member `stage` only holds MANUAL states
- * (lead | active | frozen | churned). The distinction between "active" and
+ * (active | frozen). The distinction between "active" and
  * "expired" is DERIVED from `plan_end` vs today — see src/lib/members/status.ts.
  * That means there is no status column to drift out of sync and no cron needed
  * to flip members to "expired".
@@ -53,9 +53,9 @@ export const members = sqliteTable(
     planEnd: text("plan_end"),
     frozenUntil: text("frozen_until"),
 
-    stage: text("stage", { enum: ["lead", "active", "frozen", "churned"] })
+    stage: text("stage", { enum: ["active", "frozen"] })
       .notNull()
-      .default("lead"),
+      .default("active"),
 
     notes: text("notes"),
     whatsappOptIn: integer("whatsapp_opt_in", { mode: "boolean" })

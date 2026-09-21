@@ -68,27 +68,27 @@ export function DuesTable({ rows, today }: { rows: DueRow[]; today: string }) {
                   <TR key={row.memberId}>
                     <TD>
                       <div className="flex items-center gap-2.5">
-                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-800 text-[10px] font-bold text-slate-300">
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-zinc-100 border border-zinc-200 text-[10px] font-black text-zinc-900">
                           {initials(row.memberName)}
                         </span>
                         <div className="min-w-0">
-                          <div className="truncate font-semibold text-white">
+                          <div className="truncate font-bold text-zinc-900">
                             {row.memberName}
                           </div>
-                          <div className="text-[11px] text-slate-500">{row.memberCode}</div>
+                          <div className="text-[11px] font-semibold text-zinc-500">{row.memberCode}</div>
                         </div>
                       </div>
                     </TD>
-                    <TD className="text-slate-300">{row.planName}</TD>
+                    <TD className="text-zinc-700 font-medium">{row.planName}</TD>
                     <TD>
-                      <div className="whitespace-nowrap text-slate-300">
+                      <div className="whitespace-nowrap text-zinc-800 font-medium">
                         {formatDate(row.planEnd)}
                       </div>
-                      <div className="text-[11px] text-rose-400">
+                      <div className="text-[11px] font-bold text-rose-600">
                         {overdue} {overdue === 1 ? "day" : "days"} ago
                       </div>
                     </TD>
-                    <TD className="whitespace-nowrap font-bold text-rose-300">
+                    <TD className="whitespace-nowrap font-black text-rose-600">
                       {formatMoneyCompact(row.planPriceCents)}
                     </TD>
                     <TD className="text-right">

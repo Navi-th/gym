@@ -55,7 +55,7 @@ export function SendReminderButton({
   }
 
   if (templates.length === 0) {
-    return <span className="text-[11px] text-slate-500">No templates</span>;
+    return <span className="text-[11px] text-zinc-500">No templates</span>;
   }
 
   return (
@@ -77,7 +77,7 @@ export function SendReminderButton({
         {busy ? "Preparing…" : "Send"}
       </Button>
 
-      {error && <span className="text-[11px] font-semibold text-rose-400">{error}</span>}
+      {error && <span className="text-[11px] font-semibold text-rose-600">{error}</span>}
     </div>
   );
 }

@@ -76,7 +76,7 @@ export function AssignPlanForm({
         {saving ? "Starting…" : "Start plan"}
       </Button>
 
-      {error && <span className="pb-2 text-xs font-semibold text-rose-400">{error}</span>}
+      {error && <span className="pb-2 text-xs font-semibold text-rose-600">{error}</span>}
     </form>
   );
 }

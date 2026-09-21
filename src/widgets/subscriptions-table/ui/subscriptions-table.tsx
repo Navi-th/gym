@@ -50,28 +50,28 @@ export function SubscriptionsTable({
               <TR key={sub.id}>
                 <TD>
                   <div className="flex items-center gap-2.5">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-800 text-[10px] font-bold text-slate-300">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-zinc-100 border border-zinc-200 text-[10px] font-black text-zinc-900">
                       {initials(sub.memberName)}
                     </span>
                     <div className="min-w-0">
-                      <div className="truncate font-semibold text-white">
+                      <div className="truncate font-bold text-zinc-900">
                         {sub.memberName}
                       </div>
-                      <div className="text-[11px] text-slate-500">{sub.memberCode}</div>
+                      <div className="text-[11px] font-semibold text-zinc-500">{sub.memberCode}</div>
                     </div>
                   </div>
                 </TD>
-                <TD className="text-slate-300">
+                <TD className="text-zinc-700 font-medium">
                   {planNameById.get(sub.planId) ?? "—"}
                 </TD>
-                <TD className="whitespace-nowrap text-xs text-slate-400">
+                <TD className="whitespace-nowrap text-xs text-zinc-600 font-medium">
                   {formatDate(sub.startDate)} → {formatDate(sub.endDate)}
                 </TD>
                 <TD>
-                  <div className="whitespace-nowrap text-slate-300">
+                  <div className="whitespace-nowrap text-zinc-800 font-medium">
                     {formatDate(sub.endDate)}
                   </div>
-                  <div className="text-[11px] text-slate-500">
+                  <div className="text-[11px] font-semibold text-zinc-500">
                     {formatRelativeDays(sub.daysLeft)}
                   </div>
                 </TD>

@@ -83,10 +83,9 @@ export async function assignPlan(input: {
         planId: input.planId,
         planStart: startDate,
         planEnd: endDate,
-        // Promote a lead or a returning ex-member to active, but never
-        // silently un-freeze someone who is deliberately frozen. Written as
-        // SQL so it needs no extra read and cannot race.
-        stage: sql`CASE WHEN ${membersTable.stage} IN ('lead', 'churned') THEN 'active' ELSE ${membersTable.stage} END`,
+        // Ensure stage is active when assigning a plan, but never silently un-freeze
+        // someone who is deliberately frozen. Written as SQL so it needs no extra read.
+        stage: sql`CASE WHEN ${membersTable.stage} = 'frozen' THEN 'frozen' ELSE 'active' END`,
         updatedAt: now,
       })
       .where(eq(membersTable.id, input.memberId)),

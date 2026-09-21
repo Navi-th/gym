@@ -20,14 +20,14 @@ export async function PlanFormPage({ planId }: { planId?: string }) {
       <header>
         <Link
           href="/admin/plans"
-          className="text-xs font-bold text-slate-500 transition-colors hover:text-white"
+          className="text-xs font-bold text-zinc-500 transition-colors hover:text-zinc-900"
         >
           ← Plans
         </Link>
-        <h1 className="mt-2 text-2xl font-black tracking-tight text-white">
+        <h1 className="mt-2 text-2xl font-black tracking-tight text-zinc-900">
           {plan ? plan.name : "New plan"}
         </h1>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="mt-1 text-sm text-zinc-500">
           {plan
             ? "Changing price or duration applies to future assignments."
             : "Give it a name, a price and how many days of cover it buys."}
