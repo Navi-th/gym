@@ -53,6 +53,8 @@ small change in one screen from breaking another.
 
 ```
 gym/
+├── middleware.ts                 the /admin gate — see below
+├── DEPLOYMENT.md                 deploy + Cloudflare Access runbook
 ├── app/                          Next.js routing manifest ONLY
 │   ├── layout.tsx                root layout (imports globals.css)
 │   ├── globals.css
@@ -271,6 +273,28 @@ assumption was baked into the test as well as the code.
 | 6 · Payments ✅ | `entities/payment`, `features/record-payment`, `_pages/payments` | entities + features |
 | 7 · WhatsApp send ✅ | `entities/message`, `features/send-reminder`, `_pages/reminders` | entities + features |
 | 8 · Auto reminders | `_app/api-routes/cron`, `entities/message/model` | _app + entities |
+
+---
+
+## `middleware.ts` sits outside the layers, on purpose
+
+Next.js requires middleware at the project root, so it is not part of the FSD
+tree. It guards `/admin/*` with the application-level backstop described in
+DEPLOYMENT.md: it verifies a Cloudflare Access JWT and fails closed.
+
+Two things about it are easy to get wrong:
+
+1. **It reads config from `.env`, not from Worker `vars`.** Middleware runs in
+   the edge runtime and only sees variables present at BUILD time. Worker vars
+   are runtime values, so a guard wired to them would silently never fire.
+2. **It fails OPEN when unconfigured**, logging a warning, because Cloudflare
+   Access does not exist on localhost. That is a deliberate development
+   affordance — in production the variables must be set.
+
+The JWT verification itself is a pure function in `shared/lib/access.ts` and is
+unit tested against a real generated keypair, including `alg: none`, an HS256
+algorithm swap, a wrong audience, an expired token, a tampered payload and a
+token signed by an unpublished key.
 
 ---
 
