@@ -2,7 +2,7 @@
 
 In FSD, `features` holds **user interactions that change state** — the verb
 layer. Entities are the nouns ("a Member"); features are the actions ("save a
-member", "assign a plan").
+member", "record a payment").
 
 ## What lives here
 
@@ -12,8 +12,11 @@ member", "assign a plan").
 | `archive-member/` | 4 | ✅ soft delete |
 | `assign-plan/` | 5 | ✅ start a subscription |
 | `manage-subscription/` | 5 | ✅ renew **and** freeze |
-| `record-payment/` | 6 | planned |
-| `send-reminder/` | 8 | planned |
+| `save-plan/` | 5b | ✅ create **and** edit a plan |
+| `retire-plan/` | 5b | ✅ retire / restore |
+| `record-payment/` | 6 | ✅ record, optionally renewing |
+| `send-reminder/` | 7 | ✅ render, log, open WhatsApp |
+| `run-reminders/` | 8 | planned (scheduled sends) |
 
 ## Why some features cover two actions
 
@@ -22,12 +25,12 @@ that share all their plumbing means duplicating it and letting the copies
 drift. Where two actions are genuinely the same operation, they are one slice
 with a mode or an action discriminator:
 
-- **`save-member`** — "add" and "edit" share every field.
-- **`manage-subscription`** — "renew" and "freeze" both just push the end date
-  out, and post to the same endpoint. They differ in intent, not in mechanics.
+- **`save-member`**, **`save-plan`** — add and edit share every field.
+- **`manage-subscription`** — renew and freeze both just push the end date out
+  and post to the same endpoint. They differ in intent, not mechanics.
 
 A feature is only split when the actions really are different, as
-`archive-member` is different from `save-member`.
+`archive-member` is from `save-member`, and `retire-plan` is from `save-plan`.
 
 ## The rule
 

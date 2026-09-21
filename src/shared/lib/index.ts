@@ -6,5 +6,6 @@
  */
 export { cn } from "./cn";
 export * from "./date";
+export * from "./errors";
 export * from "./format";
 export * from "./id";

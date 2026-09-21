@@ -22,3 +22,4 @@ export {
 export { createPlanHandler, listPlansHandler } from "./plans";
 export { getPlanHandler, updatePlanHandler } from "./plan-by-id";
 export { listPaymentsHandler, recordPaymentHandler } from "./payments";
+export { listMessagesHandler, sendMessageHandler } from "./messages";

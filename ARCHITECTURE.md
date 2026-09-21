@@ -195,7 +195,19 @@ compiles cleanly and hands back a wrapper rather than the row. Mutations read
 back what they wrote instead — which also proves the write actually landed
 rather than trusting that it did.
 
-**6. `*/` inside a block comment ends it.**
+**6. Drizzle wraps driver errors, so constraint text hides in `.cause`.**
+A UNIQUE violation arrives as a `DrizzleQueryError` whose OWN message is just
+"Failed query: insert into ...". Matching `error.message` misses it entirely,
+which turned the message ledger's duplicate guard into an opaque 500 instead of
+a clean 409 — live, until an end-to-end test caught it. Use
+`isUniqueConstraintError` from `shared/lib`, which walks the cause chain.
+
+**7. Clear `tsconfig.tsbuildinfo` after changing tsconfig.**
+TypeScript's incremental cache kept reporting TS2802 after `target: ES2017` was
+added, until the build info file was deleted. Same class of trap as stale
+`.next/types`: a cached artefact outliving the change that invalidated it.
+
+**8. `*/` inside a block comment ends it.**
 Writing `entities/*/ui` in a doc comment terminates the comment early and
 turns the rest into code — `TS1160: Unterminated template literal`. Escape it
 as `entities/**\/ui` or reword.
@@ -255,8 +267,9 @@ assumption was baked into the test as well as the code.
 |---|---|---|
 | 4 · Members CRUD ✅ | `entities/member`, `features/save-member`, `features/archive-member`, `_pages/members`, `_pages/member-form` | all |
 | 5 · Plans & subscriptions ✅ | `entities/subscription`, `features/assign-plan`, `features/manage-subscription`, `_pages/subscriptions` | entities + features |
-| 6 · Payments | `entities/payment`, `features/record-payment` | entities + features |
-| 7 · WhatsApp send | `entities/message/api`, `features/send-reminder` | entities + features |
+| 5b · Plans admin ✅ | `entities/plan`, `features/save-plan`, `features/retire-plan`, `_pages/plans` | entities + features |
+| 6 · Payments ✅ | `entities/payment`, `features/record-payment`, `_pages/payments` | entities + features |
+| 7 · WhatsApp send ✅ | `entities/message`, `features/send-reminder`, `_pages/reminders` | entities + features |
 | 8 · Auto reminders | `_app/api-routes/cron`, `entities/message/model` | _app + entities |
 
 ---

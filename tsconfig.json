@@ -1,5 +1,10 @@
 {
   "compilerOptions": {
+    // No target was set, so TypeScript defaulted to ES5 and rejected modern
+    // iteration (String.matchAll, for...of over iterators) with TS2802 even
+    // though the runtime is Cloudflare Workers / Node 18+. ES2017 is what
+    // Next.js itself generates.
+    "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
