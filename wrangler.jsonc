@@ -8,6 +8,14 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "gym-app-db",
+      "database_id": "8eb06b10-67c8-441c-9b27-f402dfedd367",
+      "migrations_dir": "drizzle"
+    }
+  ],
   "observability": {
     "enabled": true,
     "head_sampling_rate": 1
