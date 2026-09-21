@@ -54,8 +54,18 @@ export function deriveMemberStatus(input: {
   // Manual states win outright — they are set by a human, not by dates.
   if (stage === "lead" || stage === "churned" || stage === "frozen") return stage;
 
-  // Active stage but no end date is not a real state; treat it as a lead.
-  if (!planEnd || !ISO_DATE.test(planEnd)) return "lead";
+  // Reaching here, `stage` is "active". With no usable end date there is
+  // nothing for the date rules to say, so honour the explicit stage: an
+  // open-ended membership is real.
+  //
+  // Downgrading it to "lead" would contradict the value a human just
+  // deliberately chose. That bug was live until an end-to-end test created a
+  // member with stage=active and no plan dates: the API stored "active"
+  // while every screen rendered "Lead".
+  //
+  // Module 5 sets plan_end when a plan is attached, after which the date
+  // rules take over.
+  if (!planEnd || !ISO_DATE.test(planEnd)) return stage;
 
   const todayOnly = today.toISOString().slice(0, 10);
   const endOnly = toDateOnly(planEnd);

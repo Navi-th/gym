@@ -4,9 +4,19 @@
  * Everything outside this slice imports from `@/entities/member` — never from
  * the files inside it. That keeps `model/`, `api/` and `ui/` free to move.
  */
-export { getMembers, type MemberWithStatus } from "./api/get-members";
-export { MemberStatusBadge } from "./ui/member-status-badge";
 
+// --- data access -----------------------------------------------------------
+export {
+  getMembers,
+  type MemberFilter,
+  type MemberWithStatus,
+} from "./api/get-members";
+export { getMemberById } from "./api/get-member-by-id";
+export { createMember } from "./api/create-member";
+export { updateMember } from "./api/update-member";
+export { archiveMember } from "./api/archive-member";
+
+// --- model -----------------------------------------------------------------
 export {
   addDays,
   countMembersByStatus,
@@ -20,5 +30,19 @@ export {
   type MemberStage,
   type MemberStatus,
 } from "./model/status";
-
+export {
+  DEFAULT_COUNTRY_CODE,
+  formatPhone,
+  normalisePhone,
+} from "./model/phone";
+export {
+  validateMemberInput,
+  type MemberInput,
+  type ValidMemberInput,
+  type ValidationResult,
+} from "./model/validate";
+export { DuplicatePhoneError, MemberNotFoundError } from "./model/errors";
 export type { Member, NewMember } from "./model/types";
+
+// --- ui --------------------------------------------------------------------
+export { MemberStatusBadge } from "./ui/member-status-badge";

@@ -212,10 +212,43 @@ It reports three violation types, all verified to fire:
 
 | Module | Lands in | Layer |
 |---|---|---|
-| 4 · Members CRUD | `entities/member/api`, `features/add-member`, `_pages/members` | all |
+| 4 · Members CRUD ✅ | `entities/member`, `features/save-member`, `features/archive-member`, `_pages/members`, `_pages/member-form` | all |
 | 5 · Plans & subscriptions | `entities/subscription`, `features/renew-subscription` | entities + features |
 | 6 · Payments | `entities/payment`, `features/record-payment` | entities + features |
 | 7 · WhatsApp send | `entities/message/api`, `features/send-reminder` | entities + features |
 | 8 · Auto reminders | `_app/api-routes/cron`, `entities/message/model` | _app + entities |
+
+---
+
+## Route adapters
+
+Most files in `app/` are pure re-exports. Two are 3-line adapters instead,
+and that is deliberate:
+
+```tsx
+// app/admin/members/[id]/page.tsx
+import { MemberFormPage } from "@/_pages/member-form";
+
+export default function Page({ params }: { params: { id: string } }) {
+  return <MemberFormPage memberId={params.id} />;
+}
+```
+
+Next hands every page `{ params, searchParams }`. When a page component wants
+plain props, an adapter keeps Next's page-prop convention out of the FSD
+layer rather than leaking it inward. Where the shapes already line up, a bare
+re-export is used (`app/admin/members/page.tsx`).
+
+## A rule that changed once real data existed
+
+`deriveMemberStatus` originally treated `stage=active` with no `plan_end` as a
+**lead** — the assumption being that active-with-no-expiry is not a real
+state. An end-to-end test disproved it: a member created with `stage=active`
+and no plan dates was stored as active but rendered as Lead on every screen,
+contradicting what the admin had just chosen.
+
+The rule now honours the explicit stage when there is no usable end date. An
+open-ended membership is real; Module 5 attaches plan dates and the date
+rules take over from there.
 
 See `src/features/README.md` for the features layer specifically.
