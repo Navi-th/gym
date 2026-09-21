@@ -166,7 +166,7 @@ export function PlanForm({
       </label>
 
       <div className="flex items-center gap-3 pt-1">
-        <Button type="submit" disabled={saving} showPlus={mode === "create"}>
+        <Button type="submit" loading={saving} showPlus={mode === "create"}>
           {saving ? "Saving…" : mode === "create" ? "Create plan" : "Save changes"}
         </Button>
         <Button type="button" variant="ghost" onClick={() => router.push("/admin/plans")}>

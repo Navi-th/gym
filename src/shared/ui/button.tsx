@@ -1,4 +1,4 @@
-import { PlusCircle, type LucideIcon } from "lucide-react";
+import { Loader2, PlusCircle, type LucideIcon } from "lucide-react";
 import { cn } from "@/shared/lib";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger";
@@ -26,6 +26,8 @@ export interface ButtonProps
   size?: Size;
   /** Pass true to prepend a circular + icon. */
   showPlus?: boolean;
+  /** Pass true to render an animated loading spinner. */
+  loading?: boolean;
   /** Pass any custom Lucide icon to prepend. */
   icon?: LucideIcon;
 }
@@ -34,7 +36,9 @@ export function Button({
   variant = "primary",
   size = "md",
   showPlus = false,
+  loading = false,
   icon: Icon,
+  disabled,
   children,
   className,
   type = "button",
@@ -43,6 +47,7 @@ export function Button({
   return (
     <button
       type={type}
+      disabled={disabled || loading}
       className={cn(
         "inline-flex items-center justify-center font-bold transition-colors gap-2",
         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
@@ -53,8 +58,14 @@ export function Button({
       )}
       {...props}
     >
-      {showPlus && <PlusCircle className="h-4 w-4 shrink-0" />}
-      {Icon && <Icon className="h-4 w-4 shrink-0" />}
+      {loading ? (
+        <Loader2 className="h-4 w-4 animate-spin shrink-0" />
+      ) : (
+        <>
+          {showPlus && <PlusCircle className="h-4 w-4 shrink-0" />}
+          {Icon && <Icon className="h-4 w-4 shrink-0" />}
+        </>
+      )}
       {children}
     </button>
   );

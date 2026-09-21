@@ -73,7 +73,7 @@ export function SendReminderButton({
         ))}
       </Select>
 
-      <Button size="sm" onClick={send} disabled={busy}>
+      <Button size="sm" onClick={send} loading={busy}>
         {busy ? "Preparing…" : "Send"}
       </Button>
 

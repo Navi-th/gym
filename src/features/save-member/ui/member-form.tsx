@@ -169,7 +169,7 @@ export function MemberForm({ mode, member }: { mode: Mode; member?: Member }) {
       </label>
 
       <div className="flex items-center gap-3 pt-1">
-        <Button type="submit" disabled={saving} showPlus={mode === "create"}>
+        <Button type="submit" loading={saving} showPlus={mode === "create"}>
           {saving ? "Saving…" : mode === "create" ? "Add member" : "Save changes"}
         </Button>
         <Button

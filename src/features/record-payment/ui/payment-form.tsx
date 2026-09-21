@@ -115,7 +115,7 @@ export function PaymentForm({
         </label>
       )}
 
-      <Button type="submit" size="sm" disabled={saving}>
+      <Button type="submit" size="sm" loading={saving}>
         {saving ? "Saving…" : "Record"}
       </Button>
 
