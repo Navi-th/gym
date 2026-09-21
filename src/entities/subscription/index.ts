@@ -12,6 +12,7 @@ export { renewSubscription } from "./api/renew-subscription";
 export { freezeSubscription } from "./api/freeze-subscription";
 export { getSubscriptionById } from "./api/get-subscription-by-id";
 export { getActiveSubscription } from "./api/get-active-subscription";
+export { countSubscriptionsForPlan } from "./api/count-subscriptions-for-plan";
 export {
   getSubscriptions,
   type SubscriptionWithMember,

@@ -19,3 +19,5 @@ export {
   getSubscriptionHandler,
   updateSubscriptionHandler,
 } from "./subscription-by-id";
+export { createPlanHandler, listPlansHandler } from "./plans";
+export { getPlanHandler, updatePlanHandler } from "./plan-by-id";

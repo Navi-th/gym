@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -10,18 +11,37 @@ import {
   THead,
   TR,
   Table,
+  TableMessage,
 } from "@/shared/ui";
 import { billingPeriodLabel, type Plan } from "@/entities/plan";
+import { PlanRetireToggle } from "@/features/retire-plan";
 import { formatMoneyCompact } from "@/shared/lib";
 
-/** Read-only plan list. Editing arrives with module 5. */
-export function PlansTable({ plans }: { plans: Plan[] }) {
+/**
+ * Plans table.
+ *
+ * Two modes from one component. On the dashboard it is a read-only summary
+ * (`manage={false}`); on the plans page it grows an edit link and a retire
+ * toggle. Duplicating the table for the second mode would mean two places to
+ * update whenever a column changes.
+ */
+export function PlansTable({
+  plans,
+  manage = false,
+  description,
+}: {
+  plans: Plan[];
+  manage?: boolean;
+  description?: string;
+}) {
+  const columnCount = manage ? 6 : 3;
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Plans on offer</CardTitle>
+        <CardTitle>Plans</CardTitle>
         <CardDescription>
-          Price shown is the amount charged per billing period.
+          {description ?? "Price shown is the amount charged per billing period."}
         </CardDescription>
       </CardHeader>
       <CardContent className="p-0">
@@ -31,18 +51,62 @@ export function PlansTable({ plans }: { plans: Plan[] }) {
               <TH>Plan</TH>
               <TH>Billing</TH>
               <TH className="text-right">Price</TH>
+              {manage && <TH className="text-right">Days</TH>}
+              {manage && <TH>Availability</TH>}
+              {manage && <TH className="text-right">Actions</TH>}
             </TR>
           </THead>
           <TBody>
-            {plans.map((p) => (
-              <TR key={p.id}>
-                <TD className="font-semibold text-white">{p.name}</TD>
-                <TD className="text-slate-400">{billingPeriodLabel(p.billingPeriod)}</TD>
-                <TD className="text-right font-bold text-rose-300">
-                  {formatMoneyCompact(p.priceCents)}
-                </TD>
-              </TR>
-            ))}
+            {plans.length === 0 ? (
+              <TableMessage colSpan={columnCount}>
+                No plans yet. Create one so members can be subscribed.
+              </TableMessage>
+            ) : (
+              plans.map((plan) => (
+                <TR key={plan.id} className={plan.isActive ? undefined : "opacity-60"}>
+                  <TD className="font-semibold text-white">{plan.name}</TD>
+                  <TD className="text-slate-400">
+                    {billingPeriodLabel(plan.billingPeriod)}
+                  </TD>
+                  <TD className="text-right font-bold text-rose-300">
+                    {formatMoneyCompact(plan.priceCents)}
+                  </TD>
+                  {manage && (
+                    <TD className="text-right text-slate-400">{plan.durationDays}</TD>
+                  )}
+                  {manage && (
+                    <TD>
+                      <span
+                        className={`inline-flex items-center whitespace-nowrap rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${
+                          plan.isActive
+                            ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+                            : "bg-slate-700/30 text-slate-400 border-slate-600/40"
+                        }`}
+                      >
+                        {plan.isActive ? "On sale" : "Retired"}
+                      </span>
+                    </TD>
+                  )}
+                  {manage && (
+                    <TD>
+                      <div className="flex items-center justify-end gap-2">
+                        <Link
+                          href={`/admin/plans/${plan.id}`}
+                          className="text-xs font-bold text-rose-400 hover:text-rose-300"
+                        >
+                          Edit
+                        </Link>
+                        <PlanRetireToggle
+                          planId={plan.id}
+                          planName={plan.name}
+                          isActive={plan.isActive}
+                        />
+                      </div>
+                    </TD>
+                  )}
+                </TR>
+              ))
+            )}
           </TBody>
         </Table>
       </CardContent>
