@@ -9,6 +9,7 @@
     "lint": "next lint",
     "lint:fsd": "node scripts/check-fsd-layers.mjs",
     "test": "vitest run",
+    "test:e2e": "node scripts/e2e/run.mjs",
     "test:watch": "vitest",
     "verify": "npm run lint:fsd && tsc --noEmit && npm test --silent && next build",
     "db:generate": "drizzle-kit generate",
