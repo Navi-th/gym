@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:fsd": "node scripts/check-fsd-layers.mjs",
+    "verify": "npm run lint:fsd && tsc --noEmit && next build",
     "db:generate": "drizzle-kit generate",
     "db:migrate:local": "wrangler d1 migrations apply gym-app-db --local",
     "db:migrate:remote": "wrangler d1 migrations apply gym-app-db --remote",
