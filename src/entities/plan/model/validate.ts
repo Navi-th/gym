@@ -1,4 +1,5 @@
-import { MAX_DURATION_DAYS, MAX_PRICE_CENTS } from "./price";
+import { MAX_MONEY_CENTS } from "@/shared/config";
+import { MAX_DURATION_DAYS } from "./price";
 
 /**
  * Plan input validation.
@@ -44,7 +45,7 @@ export function validatePlanInput(raw: Partial<PlanInput>): PlanValidationResult
     errors.priceCents = "Price must be a whole number of minor units (cents).";
   } else if (priceCents < 0) {
     errors.priceCents = "Price cannot be negative.";
-  } else if (priceCents > MAX_PRICE_CENTS) {
+  } else if (priceCents > MAX_MONEY_CENTS) {
     errors.priceCents = "Price looks too large — check for a misplaced decimal point.";
   }
 

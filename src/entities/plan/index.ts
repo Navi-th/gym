@@ -9,7 +9,6 @@ export { setPlanActive } from "./api/set-plan-active";
 export {
   centsToPriceInput,
   MAX_DURATION_DAYS,
-  MAX_PRICE_CENTS,
   parsePriceToCents,
 } from "./model/price";
 export {

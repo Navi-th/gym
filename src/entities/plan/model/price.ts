@@ -30,8 +30,10 @@ export function centsToPriceInput(cents: number): string {
   return `${whole}.${String(fraction).padStart(2, "0")}`;
 }
 
-/** Upper bound so a fat-fingered price cannot become a 9-digit charge. */
-export const MAX_PRICE_CENTS = 10_000_000; // 100,000.00
-
-/** Upper bound on a plan's length, so a typo cannot create a 90-year plan. */
+/**
+ * Upper bound on a plan's length, so a typo cannot create a 90-year plan.
+ *
+ * Plan-specific, so it stays here. The money bound is NOT here — see
+ * MAX_MONEY_CENTS in shared/config, which the payment entity also needs.
+ */
 export const MAX_DURATION_DAYS = 1095; // 3 years
