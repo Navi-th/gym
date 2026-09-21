@@ -1,4 +1,4 @@
-import { CURRENCY_SYMBOL, DATE_LOCALE } from "@/shared/config";
+import { CURRENCY_SYMBOL } from "@/shared/config";
 
 /**
  * Formatting helpers.
@@ -19,17 +19,35 @@ export function formatMoneyCompact(cents: number, currency = CURRENCY_SYMBOL): s
   return `${currency}${Number.isInteger(value) ? value : value.toFixed(2)}`;
 }
 
-/** "2026-09-26" or an ISO timestamp -> "26 Sep 2026" */
+const MONTHS_SHORT = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+
+/**
+ * "2026-09-26" or an ISO timestamp -> "26 Sep 2026"
+ *
+ * Deliberately NOT `toLocaleDateString`. Locale data varies by ICU version and
+ * by runtime: under current CLDR, en-GB renders September as "Sept", while
+ * older ICU and most browsers render "Sep". For a server-rendered app that is
+ * a real hazard — the same date can differ between the server that rendered it
+ * and the browser that hydrated it, and snapshot-style tests fail on machines
+ * with different ICU builds. A fixed month table costs six lines and makes the
+ * output identical everywhere.
+ *
+ * Also validates the shape rather than trusting `new Date()`, which happily
+ * accepts nonsense and silently produces Invalid Date.
+ */
 export function formatDate(value?: string | null): string {
   if (!value) return "—";
-  const d = new Date(`${value.slice(0, 10)}T00:00:00Z`);
-  if (Number.isNaN(d.getTime())) return "—";
-  return d.toLocaleDateString(DATE_LOCALE, {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    timeZone: "UTC",
-  });
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
+  if (!match) return "—";
+
+  const [, year, month, day] = match;
+  const monthIndex = Number(month) - 1;
+  if (monthIndex < 0 || monthIndex > 11) return "—";
+
+  return `${day} ${MONTHS_SHORT[monthIndex]} ${year}`;
 }
 
 /** "2026-09-26" -> "in 5 days" / "3 days ago" / "today" */

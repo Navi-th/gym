@@ -11,5 +11,6 @@ export const APP_NAME = "PULSE GYM";
 /** Single source of truth for currency. Money is stored in minor units. */
 export const CURRENCY_SYMBOL = "₹";
 
-/** Locale used for date display. */
-export const DATE_LOCALE = "en-GB";
+// Note: there is deliberately no locale/format constant here. Date display is
+// built from a fixed month table in shared/lib/format.ts so that server and
+// client always agree (see formatDate).

@@ -181,7 +181,14 @@ The tables reference each other (`members` → `plans`, `messages` →
 `subscriptions`), so splitting them by entity creates circular imports between
 slices. The schema is infrastructure; entities own the *queries*.
 
-**4. `*/` inside a block comment ends it.**
+**4. Date formatting must not depend on the locale database.**
+`toLocaleDateString("en-GB", { month: "short" })` renders September as
+**"Sept"** under current CLDR, but "Sep" under older ICU and in most
+browsers. For a server-rendered app that means the server and the client can
+disagree about the same date. `formatDate` therefore builds its output from
+a fixed month table. There is no `DATE_LOCALE` constant any more, on purpose.
+
+**5. `*/` inside a block comment ends it.**
 Writing `entities/*/ui` in a doc comment terminates the comment early and
 turns the rest into code — `TS1160: Unterminated template literal`. Escape it
 as `entities/**\/ui` or reword.
@@ -205,6 +212,33 @@ It reports three violation types, all verified to fire:
 [deep-import]    src/x.ts -> @/entities/member/api/get-members
 [cross-slice]    src/widgets/plans-table/x.ts -> @/widgets/renewals-queue
 ```
+
+---
+
+## Testing
+
+```bash
+npm test            # vitest run — 67 tests, ~260ms
+npm run test:watch
+```
+
+Tests are **colocated** (`*.test.ts` beside the implementation), so a
+function and its expectations move together.
+
+Only pure, framework-free code is unit tested: status derivation, phone
+normalisation, input validation, dedupe keys, formatting. That is where the
+subtle bugs live, and those tests need no mocks and no database.
+
+`scripts/check-fsd-layers.mjs` exempts test files on purpose: a test for a
+model file legitimately imports it directly rather than through the slice's
+public API.
+
+**What unit tests do not cover:** the data layer and the HTTP handlers, which
+need a real D1 binding. Those were exercised with an end-to-end script run
+against `next dev` and the local D1 — 30 assertions through the actual API.
+That is how the `stage=active` + no-`plan_end` bug was found. A happy-path
+unit test on `deriveMemberStatus` would have missed it, because the wrong
+assumption was baked into the test as well as the code.
 
 ---
 
