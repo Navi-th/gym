@@ -33,11 +33,7 @@ export async function updateMember(
       phone: input.phone,
       email: input.email ?? null,
       gender: input.gender ?? null,
-      dob: input.dob ?? null,
-      emergencyContactName: input.emergencyContactName ?? null,
-      emergencyContactPhone: input.emergencyContactPhone ?? null,
       stage: input.stage ?? existing.stage,
-      notes: input.notes ?? null,
       whatsappOptIn: input.whatsappOptIn ?? false,
       // Preserve the ORIGINAL consent timestamp when consent is merely being
       // kept. Overwriting it on every edit would destroy the record of when

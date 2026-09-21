@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Field, Input, Select, Textarea } from "@/shared/ui";
+import { Button, Field, Input, Select } from "@/shared/ui";
 import type { Member, MemberStage } from "@/entities/member";
 import { submitMember } from "../api/submit-member";
 
@@ -25,11 +25,7 @@ type FormValues = {
   phone: string;
   email: string;
   gender: "" | "male" | "female" | "other";
-  dob: string;
-  emergencyContactName: string;
-  emergencyContactPhone: string;
   stage: MemberStage;
-  notes: string;
   whatsappOptIn: boolean;
 };
 
@@ -44,11 +40,7 @@ function initialValues(member?: Member): FormValues {
     phone: member?.phone ?? "",
     email: member?.email ?? "",
     gender: (member?.gender as FormValues["gender"]) ?? "",
-    dob: member?.dob ?? "",
-    emergencyContactName: member?.emergencyContactName ?? "",
-    emergencyContactPhone: member?.emergencyContactPhone ?? "",
     stage: (member?.stage as MemberStage) ?? "active",
-    notes: member?.notes ?? "",
     whatsappOptIn: member?.whatsappOptIn ?? false,
   };
 }
@@ -76,7 +68,6 @@ export function MemberForm({ mode, member }: { mode: Mode; member?: Member }) {
       // validator treats null as absent and "" as present-but-invalid.
       gender: values.gender === "" ? null : values.gender,
       email: values.email.trim() === "" ? null : values.email,
-      dob: values.dob.trim() === "" ? null : values.dob,
     });
 
     if (!result.ok) {
@@ -131,15 +122,6 @@ export function MemberForm({ mode, member }: { mode: Mode; member?: Member }) {
           />
         </Field>
 
-        <Field label="Date of birth" htmlFor="dob" error={errors.dob}>
-          <Input
-            id="dob"
-            type="date"
-            value={values.dob}
-            onChange={(e) => set("dob", e.target.value)}
-          />
-        </Field>
-
         <Field label="Gender" htmlFor="gender">
           <Select
             id="gender"
@@ -170,35 +152,7 @@ export function MemberForm({ mode, member }: { mode: Mode; member?: Member }) {
             ))}
           </Select>
         </Field>
-
-        <Field label="Emergency contact" htmlFor="emergencyContactName">
-          <Input
-            id="emergencyContactName"
-            value={values.emergencyContactName}
-            onChange={(e) => set("emergencyContactName", e.target.value)}
-          />
-        </Field>
-
-        <Field
-          label="Emergency contact phone"
-          htmlFor="emergencyContactPhone"
-          error={errors.emergencyContactPhone}
-        >
-          <Input
-            id="emergencyContactPhone"
-            value={values.emergencyContactPhone}
-            onChange={(e) => set("emergencyContactPhone", e.target.value)}
-          />
-        </Field>
       </div>
-
-      <Field label="Notes" htmlFor="notes">
-        <Textarea
-          id="notes"
-          value={values.notes}
-          onChange={(e) => set("notes", e.target.value)}
-        />
-      </Field>
 
       <label className="flex items-start gap-3.5 rounded-xl border border-zinc-200 bg-white p-4 cursor-pointer hover:bg-zinc-50 transition-colors shadow-sm">
         <input
@@ -215,7 +169,7 @@ export function MemberForm({ mode, member }: { mode: Mode; member?: Member }) {
       </label>
 
       <div className="flex items-center gap-3 pt-1">
-        <Button type="submit" disabled={saving}>
+        <Button type="submit" disabled={saving} showPlus={mode === "create"}>
           {saving ? "Saving…" : mode === "create" ? "Add member" : "Save changes"}
         </Button>
         <Button

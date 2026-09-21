@@ -44,9 +44,6 @@ export const members = sqliteTable(
     phone: text("phone").notNull(), // E.164
     email: text("email"),
     gender: text("gender", { enum: ["male", "female", "other"] }),
-    dob: text("dob"),
-    emergencyContactName: text("emergency_contact_name"),
-    emergencyContactPhone: text("emergency_contact_phone"),
 
     planId: text("plan_id").references(() => plans.id),
     planStart: text("plan_start"),
@@ -57,7 +54,6 @@ export const members = sqliteTable(
       .notNull()
       .default("active"),
 
-    notes: text("notes"),
     whatsappOptIn: integer("whatsapp_opt_in", { mode: "boolean" })
       .notNull()
       .default(false),

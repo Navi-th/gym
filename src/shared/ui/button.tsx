@@ -1,3 +1,4 @@
+import { PlusCircle, type LucideIcon } from "lucide-react";
 import { cn } from "@/shared/lib";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger";
@@ -23,11 +24,18 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
   size?: Size;
+  /** Pass true to prepend a circular + icon. */
+  showPlus?: boolean;
+  /** Pass any custom Lucide icon to prepend. */
+  icon?: LucideIcon;
 }
 
 export function Button({
   variant = "primary",
   size = "md",
+  showPlus = false,
+  icon: Icon,
+  children,
   className,
   type = "button",
   ...props
@@ -36,7 +44,7 @@ export function Button({
     <button
       type={type}
       className={cn(
-        "inline-flex items-center justify-center font-bold transition-colors",
+        "inline-flex items-center justify-center font-bold transition-colors gap-2",
         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
         "disabled:pointer-events-none disabled:opacity-50",
         VARIANTS[variant],
@@ -44,6 +52,10 @@ export function Button({
         className
       )}
       {...props}
-    />
+    >
+      {showPlus && <PlusCircle className="h-4 w-4 shrink-0" />}
+      {Icon && <Icon className="h-4 w-4 shrink-0" />}
+      {children}
+    </button>
   );
 }

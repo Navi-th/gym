@@ -18,18 +18,13 @@ export type MemberInput = {
   phone: string;
   email?: string | null;
   gender?: "male" | "female" | "other" | null;
-  dob?: string | null;
-  emergencyContactName?: string | null;
-  emergencyContactPhone?: string | null;
   stage?: MemberStage;
-  notes?: string | null;
   whatsappOptIn?: boolean;
 };
 
 /** Normalised, database-ready values. */
-export type ValidMemberInput = Omit<MemberInput, "phone" | "emergencyContactPhone"> & {
+export type ValidMemberInput = Omit<MemberInput, "phone"> & {
   phone: string;
-  emergencyContactPhone: string | null;
 };
 
 export type ValidationResult =
@@ -37,7 +32,6 @@ export type ValidationResult =
   | { ok: false; errors: Record<string, string> };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 const STAGES: MemberStage[] = ["active", "frozen"];
 
@@ -77,19 +71,6 @@ export function validateMemberInput(raw: Partial<MemberInput>): ValidationResult
     errors.email = "Not a valid email address.";
   }
 
-  const dob = clean(raw.dob);
-  if (dob && !ISO_DATE_RE.test(dob)) {
-    errors.dob = "Date of birth must be YYYY-MM-DD.";
-  }
-
-  const emergencyContactPhoneRaw = clean(raw.emergencyContactPhone);
-  const emergencyContactPhone = emergencyContactPhoneRaw
-    ? normalisePhone(emergencyContactPhoneRaw)
-    : null;
-  if (emergencyContactPhoneRaw && !emergencyContactPhone) {
-    errors.emergencyContactPhone = "Not a valid phone number.";
-  }
-
   const stage = raw.stage ?? "active";
   if (!STAGES.includes(stage)) {
     errors.stage = `Stage must be one of: ${STAGES.join(", ")}.`;
@@ -104,11 +85,7 @@ export function validateMemberInput(raw: Partial<MemberInput>): ValidationResult
       phone: phone as string,
       email,
       gender: raw.gender ?? null,
-      dob,
-      emergencyContactName: clean(raw.emergencyContactName),
-      emergencyContactPhone,
       stage,
-      notes: clean(raw.notes),
       whatsappOptIn: Boolean(raw.whatsappOptIn),
     },
   };

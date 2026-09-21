@@ -25,7 +25,7 @@ export async function PlansPage() {
           </p>
         </div>
         <Link href="/admin/plans/new">
-          <Button>New plan</Button>
+          <Button showPlus>New plan</Button>
         </Link>
       </header>
 

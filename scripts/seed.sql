@@ -27,45 +27,32 @@ INSERT OR REPLACE INTO plans (id, name, price_cents, billing_period, duration_da
 -- Deliberately covers every lifecycle state so the admin UI has something
 -- meaningful to render, including one member expiring inside 7 days.
 INSERT OR REPLACE INTO members (
-  id, member_code, full_name, phone, email, gender, dob,
-  emergency_contact_name, emergency_contact_phone,
-  plan_id, plan_start, plan_end, stage, notes,
+  id, member_code, full_name, phone, email, gender,
+  plan_id, plan_start, plan_end, stage,
   whatsapp_opt_in, opt_in_at, joined_at
 ) VALUES
-  ('mem_0001', 'PULSE-0001', 'Test Member One', '+919000000001', 'one@example.com', 'male', '1994-03-12',
-   'Test Emergency One', '+919000000101',
+  ('mem_0001', 'PULSE-0001', 'Test Member One', '+919000000001', 'one@example.com', 'male',
    'plan_pro_monthly', date('now','-10 days'), date('now','+20 days'), 'active',
-   'Seed row - synthetic. Healthy active monthly member.',
    1, datetime('now','-10 days'), date('now','-10 days')),
 
-  ('mem_0002', 'PULSE-0002', 'Test Member Two', '+919000000002', 'two@example.com', 'female', '1990-07-25',
-   'Test Emergency Two', '+919000000102',
+  ('mem_0002', 'PULSE-0002', 'Test Member Two', '+919000000002', 'two@example.com', 'female',
    'plan_pro_monthly', date('now','-25 days'), date('now','+5 days'), 'active',
-   'Seed row - synthetic. Expires within 7 days; drives the renewals queue.',
    1, datetime('now','-25 days'), date('now','-25 days')),
 
-  ('mem_0003', 'PULSE-0003', 'Test Member Three', '+919000000003', 'three@example.com', 'other', '1988-11-02',
-   'Test Emergency Three', '+919000000103',
+  ('mem_0003', 'PULSE-0003', 'Test Member Three', '+919000000003', 'three@example.com', 'other',
    'plan_vip_annual', date('now','-60 days'), date('now','+305 days'), 'active',
-   'Seed row - synthetic. Long-running annual VIP member.',
    0, NULL, date('now','-60 days')),
 
-  ('mem_0004', 'PULSE-0004', 'Test Member Four', '+919000000004', 'four@example.com', 'male', '1996-01-19',
-   'Test Emergency Four', '+919000000104',
+  ('mem_0004', 'PULSE-0004', 'Test Member Four', '+919000000004', 'four@example.com', 'male',
    'plan_starter_monthly', date('now','-33 days'), date('now','-3 days'), 'active',
-   'Seed row - synthetic. LAPSED 3 days ago: stage is still active, so the derived status engine must report expired.',
    1, datetime('now','-33 days'), date('now','-33 days')),
 
-  ('mem_0005', 'PULSE-0005', 'Test Member Five', '+919000000005', 'five@example.com', 'female', '1992-09-08',
-   'Test Emergency Five', '+919000000105',
+  ('mem_0005', 'PULSE-0005', 'Test Member Five', '+919000000005', 'five@example.com', 'female',
    'plan_pro_monthly', date('now','-40 days'), date('now','+15 days'), 'frozen',
-   'Seed row - synthetic. Travelling; membership frozen.',
    1, datetime('now','-40 days'), date('now','-40 days')),
 
-  ('mem_0006', 'PULSE-0006', 'Test Member Six', '+919000000006', 'six@example.com', 'male', '1999-05-30',
-   NULL, NULL,
+  ('mem_0006', 'PULSE-0006', 'Test Member Six', '+919000000006', 'six@example.com', 'male',
    NULL, NULL, NULL, 'active',
-   'Seed row - synthetic. New member.',
    0, NULL, date('now','-2 days'));
 
 -- Subscriptions ------------------------------------------------------------

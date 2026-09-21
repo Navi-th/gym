@@ -63,24 +63,21 @@ export function Sidebar() {
     <>
       <aside
         className={cn(
-          "shrink-0 border-zinc-200 bg-white shadow-sm z-30 sticky top-0",
+          "shrink-0 border-zinc-200 bg-white z-30 sticky top-0",
           // Mobile layout
           "w-full border-b lg:static",
           // Desktop layout: fixed sidebar column
-          "lg:w-64 lg:border-b-0 lg:border-r lg:min-h-screen lg:shadow-none"
+          "lg:w-64 lg:border-b-0 lg:border-r lg:min-h-screen"
         )}
       >
         <div className="flex items-center justify-between px-4 py-3.5 sm:px-5 sm:py-4 lg:py-6">
           <Link href="/admin" className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-black text-white font-black shadow-sm shadow-black/20">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-black text-white font-black">
               <Dumbbell className="h-5 w-5 -rotate-12 text-white" />
             </div>
             <div className="min-w-0">
               <div className="truncate text-base font-black tracking-wider text-zinc-900">
                 PULSE<span className="text-zinc-500 font-normal ml-0.5">GYM</span>
-              </div>
-              <div className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
-                Admin Console
               </div>
             </div>
           </Link>
@@ -110,7 +107,7 @@ export function Sidebar() {
                 className={cn(
                   "flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-bold transition-all min-h-[44px]",
                   active
-                    ? "bg-black text-white shadow-md shadow-black/10"
+                    ? "bg-black text-white"
                     : "text-zinc-600 hover:bg-zinc-100 hover:text-black"
                 )}
               >
@@ -135,22 +132,19 @@ export function Sidebar() {
       {/* Mobile Right-Side Slide Drawer with Smooth Transition Animation */}
       <div
         className={cn(
-          "fixed inset-y-0 right-0 z-50 w-72 max-w-[85vw] bg-white border-l border-zinc-200 shadow-2xl transition-transform duration-300 ease-in-out lg:hidden flex flex-col",
+          "fixed inset-y-0 right-0 z-50 w-72 max-w-[85vw] bg-white border-l border-zinc-200 transition-transform duration-300 ease-in-out lg:hidden flex flex-col",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
         {/* Drawer Header */}
         <div className="flex items-center justify-between p-4 border-b border-zinc-100">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-black text-white font-black shadow-sm">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-black text-white font-black">
               <Dumbbell className="h-4 w-4 -rotate-12 text-white" />
             </div>
             <div>
               <div className="text-sm font-black text-zinc-900 tracking-wider">
                 PULSE<span className="text-zinc-400 font-normal ml-0.5">GYM</span>
-              </div>
-              <div className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">
-                Navigation
               </div>
             </div>
           </div>
@@ -178,7 +172,7 @@ export function Sidebar() {
                 className={cn(
                   "flex items-center gap-3.5 rounded-xl px-4 py-3 text-sm font-bold transition-all min-h-[44px]",
                   active
-                    ? "bg-black text-white shadow-md shadow-black/10"
+                    ? "bg-black text-white"
                     : "text-zinc-700 hover:bg-zinc-100 hover:text-black"
                 )}
               >

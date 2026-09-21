@@ -31,7 +31,7 @@ export async function MembersPage({
           </p>
         </div>
         <Link href="/admin/members/new">
-          <Button>Add member</Button>
+          <Button showPlus>Add member</Button>
         </Link>
       </header>
 

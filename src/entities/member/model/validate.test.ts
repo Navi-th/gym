@@ -39,11 +39,8 @@ describe("validateMemberInput - acceptance", () => {
   });
 
   it("treats empty optional strings as absent, not as invalid values", () => {
-    const value = valueOf({ ...MINIMAL, email: "", dob: "", notes: "", emergencyContactPhone: "" });
+    const value = valueOf({ ...MINIMAL, email: "" });
     expect(value.email).toBeNull();
-    expect(value.dob).toBeNull();
-    expect(value.notes).toBeNull();
-    expect(value.emergencyContactPhone).toBeNull();
   });
 
   it("accepts each valid stage", () => {
@@ -81,15 +78,6 @@ describe("validateMemberInput - rejection", () => {
     expect(valueOf({ ...MINIMAL, email: null }).email).toBeNull();
   });
 
-  it("requires date of birth in YYYY-MM-DD when supplied", () => {
-    expect(errorsOf({ ...MINIMAL, dob: "21/09/1994" }).dob).toMatch(/YYYY-MM-DD/);
-    expect(valueOf({ ...MINIMAL, dob: "1994-09-21" }).dob).toBe("1994-09-21");
-  });
-
-  it("rejects an unusable emergency contact phone", () => {
-    expect(errorsOf({ ...MINIMAL, emergencyContactPhone: "abc" }).emergencyContactPhone).toBeDefined();
-  });
-
   it("rejects an unknown stage", () => {
     // Guards against a hand-crafted request body bypassing the UI.
     expect(errorsOf({ ...MINIMAL, stage: "wizard" as never }).stage).toMatch(/must be one of/i);
@@ -97,7 +85,7 @@ describe("validateMemberInput - rejection", () => {
 
   it("reports EVERY problem at once, not just the first", () => {
     // So a user fixing the form is not forced through one error per submit.
-    const errors = errorsOf({ fullName: "A", phone: "1", email: "bad", dob: "21/09/1994" });
-    expect(Object.keys(errors).sort()).toEqual(["dob", "email", "fullName", "phone"]);
+    const errors = errorsOf({ fullName: "A", phone: "1", email: "bad" });
+    expect(Object.keys(errors).sort()).toEqual(["email", "fullName", "phone"]);
   });
 });
