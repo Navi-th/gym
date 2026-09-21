@@ -188,7 +188,14 @@ browsers. For a server-rendered app that means the server and the client can
 disagree about the same date. `formatDate` therefore builds its output from
 a fixed month table. There is no `DATE_LOCALE` constant any more, on purpose.
 
-**5. `*/` inside a block comment ends it.**
+**5. `db.batch()` does not return the rows it wrote.**
+The D1 driver resolves `batch()` to `D1Result` objects, not to the inserted
+rows. `const [row] = await db.batch([...])` followed by `row as Subscription`
+compiles cleanly and hands back a wrapper rather than the row. Mutations read
+back what they wrote instead — which also proves the write actually landed
+rather than trusting that it did.
+
+**6. `*/` inside a block comment ends it.**
 Writing `entities/*/ui` in a doc comment terminates the comment early and
 turns the rest into code — `TS1160: Unterminated template literal`. Escape it
 as `entities/**\/ui` or reword.
@@ -247,7 +254,7 @@ assumption was baked into the test as well as the code.
 | Module | Lands in | Layer |
 |---|---|---|
 | 4 · Members CRUD ✅ | `entities/member`, `features/save-member`, `features/archive-member`, `_pages/members`, `_pages/member-form` | all |
-| 5 · Plans & subscriptions | `entities/subscription`, `features/renew-subscription` | entities + features |
+| 5 · Plans & subscriptions ✅ | `entities/subscription`, `features/assign-plan`, `features/manage-subscription`, `_pages/subscriptions` | entities + features |
 | 6 · Payments | `entities/payment`, `features/record-payment` | entities + features |
 | 7 · WhatsApp send | `entities/message/api`, `features/send-reminder` | entities + features |
 | 8 · Auto reminders | `_app/api-routes/cron`, `entities/message/model` | _app + entities |

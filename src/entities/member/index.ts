@@ -18,15 +18,12 @@ export { archiveMember } from "./api/archive-member";
 
 // --- model -----------------------------------------------------------------
 export {
-  addDays,
   countMembersByStatus,
-  daysBetween,
   daysUntilExpiry,
   deriveMemberStatus,
   EXPIRING_SOON_DAYS,
   selectRenewalsQueue,
   STATUS_META,
-  toDateOnly,
   type MemberStage,
   type MemberStatus,
 } from "./model/status";

@@ -1,13 +1,11 @@
 import { describe, expect, it } from "vitest";
+import { addDays } from "@/shared/lib";
 import {
-  addDays,
   countMembersByStatus,
-  daysBetween,
   daysUntilExpiry,
   deriveMemberStatus,
   EXPIRING_SOON_DAYS,
   selectRenewalsQueue,
-  toDateOnly,
 } from "./status";
 
 /** Fixed clock so these never depend on the day they run. */
@@ -72,25 +70,8 @@ describe("deriveMemberStatus", () => {
   });
 });
 
-describe("date helpers", () => {
-  it("toDateOnly normalises dates and timestamps alike", () => {
-    expect(toDateOnly("2026-09-21")).toBe("2026-09-21");
-    expect(toDateOnly("2026-09-21T08:31:00.000Z")).toBe("2026-09-21");
-  });
-
-  it("addDays crosses month and year boundaries in UTC", () => {
-    expect(addDays("2026-09-28", 5)).toBe("2026-10-03");
-    expect(addDays("2026-12-30", 3)).toBe("2027-01-02");
-    expect(addDays("2026-03-01", -1)).toBe("2026-02-28");
-  });
-
-  it("daysBetween counts whole days and goes negative into the past", () => {
-    expect(daysBetween("2026-09-21", "2026-09-26")).toBe(5);
-    expect(daysBetween("2026-09-21", "2026-09-21")).toBe(0);
-    expect(daysBetween("2026-09-21", "2026-09-18")).toBe(-3);
-  });
-
-  it("daysUntilExpiry is measured against today", () => {
+describe("daysUntilExpiry", () => {
+  it("is measured against today and goes negative into the past", () => {
     expect(daysUntilExpiry("2026-09-26", TODAY)).toBe(5);
     expect(daysUntilExpiry("2026-09-18", TODAY)).toBe(-3);
   });
