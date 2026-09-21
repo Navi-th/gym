@@ -63,7 +63,12 @@ check("  shows the consent column", html.includes("Consent"), true);
 check("  marks consent as given for the queued members", html.includes("Given"), true);
 check("  shows the sent message", html.includes("Reply here to renew"), true);
 
-console.log("\n8. NO DANGLING SIDEBAR LINKS");
+console.log("\n8. ROOT REDIRECTS INTO THE ADMIN");
+const root = await fetch(B + "/");
+check("GET / returns 200 after redirect", root.status, 200);
+check("  and lands on the dashboard", (await root.text()).includes("Dashboard"), true);
+
+console.log("\n9. NO DANGLING SIDEBAR LINKS");
 for (const path of ["/admin", "/admin/members", "/admin/plans", "/admin/subscriptions", "/admin/payments", "/admin/reminders"]) {
   const r = await fetch(B + path);
   check(`  ${path}`, r.status, 200);

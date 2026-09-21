@@ -58,7 +58,7 @@ gym/
 ├── app/                          Next.js routing manifest ONLY
 │   ├── layout.tsx                root layout (imports globals.css)
 │   ├── globals.css
-│   ├── page.tsx                  -> re-export from @/_pages/home
+│   ├── page.tsx                  redirects to /admin (there is no public site)
 │   ├── admin/
 │   │   ├── layout.tsx            renders <AdminShell>
 │   │   ├── page.tsx              -> re-export from @/_pages/admin-dashboard
@@ -69,8 +69,10 @@ gym/
     ├── _app/                     FSD App layer
     │   └── api-routes/           getHealth, getAdminPing + index.ts
     ├── _pages/                   FSD Pages layer
-    │   ├── home/
-    │   └── admin-dashboard/
+    │   ├── admin-dashboard/
+    │   ├── members/  member-form/
+    │   ├── plans/    plan-form/
+    │   ├── payments/  subscriptions/  reminders/
     ├── widgets/
     │   ├── admin-shell/          owns sidebar.tsx — see "same-layer" rule
     │   ├── member-stats/
@@ -209,7 +211,16 @@ TypeScript's incremental cache kept reporting TS2802 after `target: ES2017` was
 added, until the build info file was deleted. Same class of trap as stale
 `.next/types`: a cached artefact outliving the change that invalidated it.
 
-**8. `*/` inside a block comment ends it.**
+**8. `next build` output in `.next` breaks `next dev`.**
+Running `npm run verify` (which builds) after a dev server has started leaves
+production artifacts that dev mode cannot reconcile. The symptom is nasty:
+`/` returned **404** while every `/admin` route still answered 200, which looks
+exactly like a routing bug and is not one. Use `npm run dev:clean` to clear
+`.next` first. Same family as the stale `.next/types` and
+`tsconfig.tsbuildinfo` traps — a cached artefact outliving the change that
+invalidated it.
+
+**9. `*/` inside a block comment ends it.**
 Writing `entities/*/ui` in a doc comment terminates the comment early and
 turns the rest into code — `TS1160: Unterminated template literal`. Escape it
 as `entities/**\/ui` or reword.

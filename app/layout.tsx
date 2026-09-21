@@ -2,9 +2,12 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "PULSE GYM | Next-Gen Fitness & High-Performance Training",
-  description: "Experience elite fitness coaching, state-of-the-art strength zones, dynamic group classes, and AI-driven training plans on Cloudflare Workers.",
-  keywords: ["gym", "fitness", "workout", "personal trainer", "bodybuilding", "pulse gym"],
+  title: "PULSE GYM Admin",
+  description: "Membership, subscriptions, payments and WhatsApp reminders.",
+  // The whole application is the admin panel, so none of it belongs in a search
+  // index. Cloudflare Access keeps people out; this keeps crawlers from
+  // advertising the URL in the first place.
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({

@@ -55,6 +55,29 @@ The working order is therefore: reset with nothing running, start a server, run
 one suite, stop it. It costs a few seconds each and removes a whole class of
 confusing failure.
 
+## Three more traps the runner now guards against
+
+**A leftover `workerd` per suite.** `initOpenNextCloudflareForDev()` starts a
+`workerd` proxy to serve local D1, and that proxy does **not** die with its
+parent dev server. Killing the server alone left one orphan per suite — four by
+the end of a run, each still holding the database, accumulating across runs.
+
+the runner now reaps them, matched on this project's `node_modules` path so a
+`workerd` belonging to another project is left alone.
+
+**A production build in `.next`.** `next build` writes `.next/BUILD_ID`;
+`next dev` never does. If that file exists the runner clears `.next` first,
+because a production build poisons dev — it once made `/` return **404** while
+every `/admin` route still answered 200, which reads exactly like a routing bug
+and is not one.
+
+Cleared *conditionally*, not always: clearing unconditionally forces every suite
+to compile cold and roughly triples the run time.
+
+**Something already on the port.** The runner refuses to start if anything is
+already listening on 3000, rather than racing it. An earlier version let two
+dev servers compete and the run simply hung, which is worse than failing.
+
 Suites are still NOT idempotent against a database they did not seed — running
 one by hand twice will fail on counts and on the duplicate guards. Use the
 runner, or reset first.

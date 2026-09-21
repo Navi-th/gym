@@ -5,25 +5,23 @@
  *   npm run test:e2e
  *
  * EACH suite gets its own freshly seeded database AND its own dev server, so
- * the suites are fully independent, individually re-runnable, and safe to
- * reorder.
+ * the suites are independent, individually re-runnable, and safe to reorder.
  *
- * That isolation is not gold-plating; two simpler designs both failed here:
+ * That isolation was not the first design. Two simpler ones both failed:
  *
  *   1. One reset, one server, all suites sharing it. `payments` fixes the one
  *      lapsed member, so `reminders` afterwards counted zero lapsed instead of
- *      one — shared state masquerading as a bug.
+ *      one. Shared state masquerading as a bug in the app.
  *
- *   2. One server, a reset before each suite. This is worse: deleting
+ *   2. One server, a reset before each suite. Worse: deleting
  *      `.wrangler/state/v3/d1` underneath a running `next dev` leaves its D1
- *      handle pointing at a file that no longer exists, and every subsequent
- *      request returns 500.
+ *      handle pointing at a file that no longer exists, and every request
+ *      afterwards returns 500.
  *
- * So the order is: reset with no server up, start a server, run one suite, stop
- * it. It costs a few extra seconds per suite and removes an entire class of
- * confusing failure.
+ * So: reset with nothing running, start a server, run one suite, stop it.
  */
 import { spawn, spawnSync } from "node:child_process";
+import { existsSync, rmSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -45,20 +43,11 @@ async function isServerUp() {
   }
 }
 
-async function waitForServer(timeoutMs = 45_000) {
+async function waitFor(condition, timeoutMs) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
-    if (await isServerUp()) return true;
+    if (await condition()) return true;
     await sleep(400);
-  }
-  return false;
-}
-
-async function waitForServerDown(timeoutMs = 15_000) {
-  const deadline = Date.now() + timeoutMs;
-  while (Date.now() < deadline) {
-    if (!(await isServerUp())) return true;
-    await sleep(300);
   }
   return false;
 }
@@ -88,14 +77,59 @@ async function startServer() {
   child.stdout.on("data", (chunk) => { log += chunk; });
   child.stderr.on("data", (chunk) => { log += chunk; });
 
-  if (!(await waitForServer())) return { child, log, ready: false };
-  return { child, log, ready: true };
+  const ready = await waitFor(isServerUp, 45_000);
+  return { child, log, ready };
 }
 
+/**
+ * Stops a server and CONFIRMS it is gone.
+ *
+ * SIGTERM first, then SIGKILL if it will not go. An earlier version trusted a
+ * single SIGTERM and a leftover server raced the next suite for port 3000,
+ * which wedged the run rather than failing it.
+ */
 async function stopServer(child) {
   if (!child || child.pid === undefined) return;
-  try { process.kill(-child.pid, "SIGTERM"); } catch {}
-  await waitForServerDown();
+
+  const signalGroup = (signal) => {
+    try { process.kill(-child.pid, signal); } catch { /* already gone */ }
+  };
+
+  signalGroup("SIGTERM");
+  if (await waitFor(async () => !(await isServerUp()), 8_000)) return;
+
+  console.log("e2e: server ignored SIGTERM, sending SIGKILL");
+  signalGroup("SIGKILL");
+  await waitFor(async () => !(await isServerUp()), 5_000);
+}
+
+/** Stops the server, then the runtime it leaked. */
+async function shutDown(child) {
+  await stopServer(child);
+  reapWorkerd();
+}
+
+/**
+ * Reaps the local Cloudflare runtime.
+ *
+ * initOpenNextCloudflareForDev() starts a `workerd` proxy to serve local D1,
+ * and that proxy does NOT die with its parent dev server. Killing the server
+ * alone left one orphan per suite - four by the end of a run, each still
+ * holding the database file. That is a slow leak across runs, and stale proxies
+ * against a reset database are exactly the kind of thing that produces
+ * confusing failures later.
+ *
+ * Matched on THIS project's node_modules path, so a workerd belonging to some
+ * other wrangler project on the machine is left alone.
+ */
+function reapWorkerd() {
+  try {
+    spawnSync("pkill", ["-f", join(ROOT, "node_modules/@cloudflare/workerd")], {
+      stdio: "ignore",
+    });
+  } catch {
+    // pkill is unavailable (non-POSIX platform); nothing to reap.
+  }
 }
 
 function runSuite(script) {
@@ -107,6 +141,36 @@ function runSuite(script) {
     child.on("close", (code) => resolve(code ?? 1));
   });
 }
+
+// ---------------------------------------------------------------------------
+// Pre-flight
+// ---------------------------------------------------------------------------
+
+// Something already on the port would race every suite's server and produce a
+// wedged, confusing run. Better to refuse than to half-work.
+if (await isServerUp()) {
+  console.error(
+    `e2e: something is already listening on ${BASE}.\n` +
+      "     Stop it first (the runner needs the port to itself)."
+  );
+  process.exit(1);
+}
+
+// A production build left in .next confuses `next dev`: it once made `/` return
+// 404 while every /admin route still answered 200, which reads as a routing bug
+// and is not one. BUILD_ID is written by `next build` and never by `next dev`,
+// so its presence is a precise signal.
+//
+// Cleared conditionally, not unconditionally: clearing always would force every
+// suite to compile cold and roughly triple the run time.
+if (existsSync(join(ROOT, ".next", "BUILD_ID"))) {
+  rmSync(join(ROOT, ".next"), { recursive: true, force: true });
+  console.log("e2e: cleared a stale production .next");
+}
+
+// ---------------------------------------------------------------------------
+// Run
+// ---------------------------------------------------------------------------
 
 const results = [];
 
@@ -125,13 +189,13 @@ for (const suite of SUITES) {
   const server = await startServer();
   if (!server.ready) {
     console.error(`e2e: the dev server never became ready for ${suite}.\n${server.log}`);
-    await stopServer(server.child);
+    await shutDown(server.child);
     results.push({ suite, ok: false });
     continue;
   }
 
   const code = await runSuite(`${suite}.mjs`);
-  await stopServer(server.child);
+  await shutDown(server.child);
   results.push({ suite, ok: code === 0 });
 }
 
@@ -142,4 +206,5 @@ for (const result of results) {
 }
 console.log(`\n${results.length - failed.length}/${results.length} suites passed`);
 
+reapWorkerd();
 process.exit(failed.length === 0 ? 0 : 1);

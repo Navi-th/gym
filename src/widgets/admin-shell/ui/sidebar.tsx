@@ -10,7 +10,6 @@ import {
   Repeat,
   Users,
   Wallet,
-  ExternalLink,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/shared/lib";
@@ -85,16 +84,6 @@ export function Sidebar() {
           );
         })}
       </nav>
-
-      <div className="hidden border-t border-slate-800 p-3 lg:block">
-        <Link
-          href="/"
-          className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-500 transition-colors hover:bg-slate-800/60 hover:text-white"
-        >
-          <ExternalLink className="h-3.5 w-3.5" />
-          View public site
-        </Link>
-      </div>
     </aside>
   );
 }
