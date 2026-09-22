@@ -6,6 +6,7 @@ import {
   type MemberInput,
   type MemberStatus,
 } from "@/entities/member";
+import { recordPayment, type PaymentMethod } from "@/entities/payment";
 import { getPlanById } from "@/entities/plan";
 import { assignPlan } from "@/entities/subscription";
 
@@ -35,9 +36,9 @@ export async function listMembersHandler(request: Request) {
 
 /** POST /admin/api/members */
 export async function createMemberHandler(request: Request) {
-  let body: Partial<MemberInput> & { planId?: string; startDate?: string };
+  let body: Partial<MemberInput> & { planId?: string; startDate?: string; paymentMethod?: string };
   try {
-    body = (await request.json()) as Partial<MemberInput> & { planId?: string; startDate?: string };
+    body = (await request.json()) as Partial<MemberInput> & { planId?: string; startDate?: string; paymentMethod?: string };
   } catch {
     return Response.json({ ok: false, error: "Invalid JSON body." }, { status: 400 });
   }
@@ -54,12 +55,27 @@ export async function createMemberHandler(request: Request) {
       const plan = await getPlanById(body.planId);
       if (plan && plan.isActive) {
         const startDate = typeof body.startDate === "string" && body.startDate.trim() ? body.startDate.trim() : undefined;
-        await assignPlan({
+        const subscription = await assignPlan({
           memberId: member.id,
           planId: plan.id,
           durationDays: plan.durationDays,
           priceCents: plan.priceCents,
           startDate,
+        });
+
+        const method = (body.paymentMethod === "upi" ? "upi" : "cash") as PaymentMethod;
+        const nowISO = new Date().toISOString();
+
+        await recordPayment({
+          memberId: member.id,
+          subscriptionId: subscription.id,
+          amountCents: plan.priceCents,
+          method,
+          paidAt: nowISO,
+          periodStart: subscription.startDate,
+          periodEnd: subscription.endDate,
+          reference: null,
+          note: `Payment for ${plan.name}`,
         });
       }
     }
