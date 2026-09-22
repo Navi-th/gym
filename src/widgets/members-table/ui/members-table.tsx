@@ -5,7 +5,7 @@ import {
   MemberStatusBadge,
   type MemberWithStatus,
 } from "@/entities/member";
-import { formatDate, formatRelativeDays, initials } from "@/shared/lib";
+import { formatDate, formatRelativeDays } from "@/shared/lib";
 
 /**
  * Member directory table.
@@ -35,22 +35,12 @@ export function MembersTable({ members }: { members: MemberWithStatus[] }) {
           members.map((member) => (
             <TR key={member.id}>
               <TD>
-                <div className="flex items-center gap-2.5">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-zinc-100 border border-zinc-200 text-[10px] font-black text-zinc-900">
-                    {initials(member.fullName)}
-                  </span>
-                  <div className="min-w-0">
-                    <Link
-                      href={`/admin/members/${member.id}`}
-                      className="truncate font-bold text-zinc-900 hover:text-black transition-colors"
-                    >
-                      {member.fullName}
-                    </Link>
-                    <div className="text-[11px] font-semibold text-zinc-500">
-                      {member.memberCode}
-                    </div>
-                  </div>
-                </div>
+                <Link
+                  href={`/admin/members/${member.id}`}
+                  className="font-bold text-zinc-900 hover:text-black transition-colors"
+                >
+                  {member.fullName}
+                </Link>
               </TD>
               <TD className="whitespace-nowrap text-zinc-700">
                 {formatPhone(member.phone)}
