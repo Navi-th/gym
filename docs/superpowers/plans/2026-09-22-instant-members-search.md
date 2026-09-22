@@ -1,3 +1,34 @@
+# Instant Members Search Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Transform `MembersFilters` into an optimized live search component with debounced URL updates in Next.js App Router without requiring an Enter keystroke or Search button click.
+
+**Architecture:** Convert `MembersFilters` to a `'use client'` component. Use local input state for zero-latency typing, debouncing updates to `useSearchParams` via `startTransition` and `router.replace` by 300ms. Status changes immediately update URL query parameters.
+
+**Tech Stack:** React 19 / Next.js App Router (`useRouter`, `usePathname`, `useSearchParams`, `useTransition`), TypeScript, TailwindCSS.
+
+## Global Constraints
+
+- **File Path:** `src/widgets/members-table/ui/members-filters.tsx`
+- **Debounce Duration:** 300ms
+- **Default Page Reset:** Always set `page=1` when search query `q` or `status` changes.
+
+---
+
+### Task 1: Refactor `MembersFilters` to Client Component with Live Debounced Search
+
+**Files:**
+- Modify: `src/widgets/members-table/ui/members-filters.tsx`
+
+**Interfaces:**
+- Consumes: `q: string`, `status: string` props passed from `MembersPage`
+- Produces: Updated URL parameters (`?q=...&status=...&page=1`) on the client side
+
+- [ ] **Step 1: Convert `MembersFilters` to `'use client'` and implement hooks & debounced URL sync**
+
+Update `src/widgets/members-table/ui/members-filters.tsx` to:
+```tsx
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -12,12 +43,6 @@ const FILTERABLE: MemberStatus[] = [
   "frozen",
 ];
 
-/**
- * Optimized debounced live search and status filter component.
- *
- * Keeps query and status in sync with URL searchParams, resetting pagination
- * to page 1 on every filter change. Uses useTransition for non-blocking UI updates.
- */
 export function MembersFilters({ q, status }: { q: string; status: string }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -78,7 +103,7 @@ export function MembersFilters({ q, status }: { q: string; status: string }) {
           aria-label="Search members"
         />
         {isPending && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 animate-pulse pointer-events-none">
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 animate-pulse">
             Searching…
           </div>
         )}
@@ -101,4 +126,19 @@ export function MembersFilters({ q, status }: { q: string; status: string }) {
     </div>
   );
 }
+```
 
+- [ ] **Step 2: Run type check & build verification**
+
+Run `npm run build` or `npx tsc --noEmit` to verify zero TypeScript or syntax errors.
+
+- [ ] **Step 3: Test live search functionality in browser or via test**
+
+Verify typing triggers debounced URL update after 300ms and status dropdown selection updates immediately.
+
+- [ ] **Step 4: Commit changes**
+
+```bash
+git add src/widgets/members-table/ui/members-filters.tsx docs/superpowers/plans/2026-09-22-instant-members-search.md
+git commit -m "feat(members): implement debounced live search and status filter"
+```
