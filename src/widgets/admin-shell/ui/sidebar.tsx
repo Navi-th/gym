@@ -117,29 +117,6 @@ export function Sidebar() {
         </nav>
       </aside>
 
-      {/* Mobile Bottom Tab Navigation Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-md border-t border-slate-200/80 px-2 py-1.5 flex items-center justify-around lg:hidden">
-        {NAV.slice(0, 5).map((item) => {
-          const active = isActive(pathname, item);
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex flex-col items-center justify-center py-1 px-2 min-w-[56px] rounded-2xl transition-all",
-                active ? "text-slate-900 font-bold" : "text-slate-500 hover:text-slate-800"
-              )}
-            >
-              <div className={cn("p-1 rounded-full transition-colors", active ? "bg-[#C4FF00] text-slate-900" : "")}>
-                <Icon className="h-5 w-5" />
-              </div>
-              <span className="text-[10px] mt-0.5 tracking-tight truncate max-w-[64px]">{item.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
-
       {/* Mobile Backdrop Overlay */}
       <div
         className={cn(
