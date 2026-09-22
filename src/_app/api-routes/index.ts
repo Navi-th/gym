@@ -14,7 +14,7 @@ export {
   getMemberHandler,
   updateMemberHandler,
 } from "./member-by-id";
-export { assignPlanHandler, listSubscriptionsHandler } from "./subscriptions";
+export { assignPlanHandler } from "./subscriptions";
 export {
   getSubscriptionHandler,
   updateSubscriptionHandler,

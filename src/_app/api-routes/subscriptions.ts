@@ -2,31 +2,12 @@ import { getMemberById } from "@/entities/member";
 import { getPlanById } from "@/entities/plan";
 import {
   assignPlan,
-  getSubscriptions,
   MemberAlreadySubscribedError,
 } from "@/entities/subscription";
 
 /**
  * HTTP layer for subscriptions.
  */
-
-/** GET /admin/api/subscriptions?page=&pageSize= */
-export async function listSubscriptionsHandler(request: Request) {
-  const url = new URL(request.url);
-  const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
-  const pageSize = Math.max(1, Number(url.searchParams.get("pageSize")) || 10);
-
-  const result = await getSubscriptions({ page, pageSize });
-
-  return Response.json({
-    ok: true,
-    count: result.totalCount,
-    page: result.page,
-    pageSize: result.pageSize,
-    totalPages: result.totalPages,
-    subscriptions: result.data,
-  });
-}
 
 /** POST /admin/api/subscriptions  { memberId, planId, startDate? } */
 export async function assignPlanHandler(request: Request) {
