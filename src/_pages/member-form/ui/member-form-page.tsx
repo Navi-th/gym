@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
+  BackButton,
   Card,
   CardContent,
   CardDescription,
@@ -50,19 +51,16 @@ export async function MemberFormPage({ memberId }: { memberId?: string }) {
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
-      <header>
-        <Link
-          href="/admin/members"
-          className="text-xs font-bold text-zinc-500 transition-colors hover:text-black inline-flex items-center gap-1"
-        >
-          ← Members
-        </Link>
-        <h1 className="mt-2 text-2xl sm:text-3xl font-black tracking-tight text-zinc-900">
-          {member ? member.fullName : "Add member"}
-        </h1>
-        <p className="mt-1 text-xs sm:text-sm text-zinc-500">
-          {member ? `Member code ${member.memberCode}` : "Details can be edited later."}
-        </p>
+      <header className="space-y-3">
+        <BackButton href="/admin/members" label="Members" />
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-display">
+            {member ? member.fullName : "Add member"}
+          </h1>
+          <p className="mt-1 text-xs sm:text-sm text-slate-500 font-medium">
+            {member ? `Member code ${member.memberCode}` : "Details can be edited later."}
+          </p>
+        </div>
       </header>
 
       {member && (

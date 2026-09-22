@@ -15,4 +15,5 @@ export * from "./pagination";
 export * from "./segmented-track";
 export * from "./stat-tile";
 export * from "./grouped-list-card";
+export * from "./back-button";
 
