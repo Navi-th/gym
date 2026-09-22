@@ -5,7 +5,7 @@ import {
   MemberStatusBadge,
   type MemberWithStatus,
 } from "@/entities/member";
-import { formatDate, initials } from "@/shared/lib";
+import { formatDate, formatRelativeDays, initials } from "@/shared/lib";
 
 /**
  * Member directory table.
@@ -20,14 +20,15 @@ export function MembersTable({ members }: { members: MemberWithStatus[] }) {
         <TR>
           <TH>Member</TH>
           <TH>Phone</TH>
-          <TH>Plan expiry</TH>
+          <TH>Plan</TH>
+          <TH>Ends</TH>
           <TH>Status</TH>
           <TH className="text-right">Actions</TH>
         </TR>
       </THead>
       <TBody>
         {members.length === 0 ? (
-          <TableMessage colSpan={5}>
+          <TableMessage colSpan={6}>
             No members match. Try clearing the search, or add a member.
           </TableMessage>
         ) : (
@@ -54,8 +55,18 @@ export function MembersTable({ members }: { members: MemberWithStatus[] }) {
               <TD className="whitespace-nowrap text-zinc-700">
                 {formatPhone(member.phone)}
               </TD>
-              <TD className="whitespace-nowrap text-zinc-700">
-                {formatDate(member.planEnd)}
+              <TD className="whitespace-nowrap text-zinc-700 font-medium">
+                {member.planName ?? "—"}
+              </TD>
+              <TD className="whitespace-nowrap">
+                <div className="text-zinc-800 font-medium">
+                  {formatDate(member.planEnd)}
+                </div>
+                {member.planEnd && member.daysLeft != null && (
+                  <div className="text-[11px] font-semibold text-zinc-500">
+                    {formatRelativeDays(member.daysLeft)}
+                  </div>
+                )}
               </TD>
               <TD>
                 <MemberStatusBadge status={member.status} />
