@@ -6,6 +6,8 @@ import {
   type MemberInput,
   type MemberStatus,
 } from "@/entities/member";
+import { getPlanById } from "@/entities/plan";
+import { assignPlan } from "@/entities/subscription";
 
 /**
  * HTTP layer for the member collection.
@@ -33,9 +35,9 @@ export async function listMembersHandler(request: Request) {
 
 /** POST /admin/api/members */
 export async function createMemberHandler(request: Request) {
-  let body: Partial<MemberInput>;
+  let body: Partial<MemberInput> & { planId?: string; startDate?: string };
   try {
-    body = (await request.json()) as Partial<MemberInput>;
+    body = (await request.json()) as Partial<MemberInput> & { planId?: string; startDate?: string };
   } catch {
     return Response.json({ ok: false, error: "Invalid JSON body." }, { status: 400 });
   }
@@ -47,6 +49,21 @@ export async function createMemberHandler(request: Request) {
 
   try {
     const member = await createMember(result.value);
+
+    if (body.planId && typeof body.planId === "string") {
+      const plan = await getPlanById(body.planId);
+      if (plan && plan.isActive) {
+        const startDate = typeof body.startDate === "string" && body.startDate.trim() ? body.startDate.trim() : undefined;
+        await assignPlan({
+          memberId: member.id,
+          planId: plan.id,
+          durationDays: plan.durationDays,
+          priceCents: plan.priceCents,
+          startDate,
+        });
+      }
+    }
+
     return Response.json({ ok: true, member }, { status: 201 });
   } catch (error) {
     if (error instanceof DuplicatePhoneError) {
@@ -58,3 +75,4 @@ export async function createMemberHandler(request: Request) {
     throw error;
   }
 }
+

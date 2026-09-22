@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Field, Input, Select } from "@/shared/ui";
 import type { Member, MemberStage } from "@/entities/member";
+import { billingPeriodLabel, type Plan } from "@/entities/plan";
+import { formatMoneyCompact } from "@/shared/lib";
 import { submitMember } from "../api/submit-member";
 
 /**
@@ -27,6 +29,8 @@ type FormValues = {
   gender: "" | "male" | "female" | "other";
   stage: MemberStage;
   whatsappOptIn: boolean;
+  planId: string;
+  startDate: string;
 };
 
 const STAGES: { value: MemberStage; label: string }[] = [
@@ -42,10 +46,20 @@ function initialValues(member?: Member): FormValues {
     gender: (member?.gender as FormValues["gender"]) ?? "",
     stage: (member?.stage as MemberStage) ?? "active",
     whatsappOptIn: member?.whatsappOptIn ?? false,
+    planId: "",
+    startDate: "",
   };
 }
 
-export function MemberForm({ mode, member }: { mode: Mode; member?: Member }) {
+export function MemberForm({
+  mode,
+  member,
+  plans = [],
+}: {
+  mode: Mode;
+  member?: Member;
+  plans?: Plan[];
+}) {
   const router = useRouter();
   const [values, setValues] = useState<FormValues>(() => initialValues(member));
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -68,6 +82,8 @@ export function MemberForm({ mode, member }: { mode: Mode; member?: Member }) {
       // validator treats null as absent and "" as present-but-invalid.
       gender: values.gender === "" ? null : values.gender,
       email: values.email.trim() === "" ? null : values.email,
+      planId: mode === "create" && values.planId ? values.planId : undefined,
+      startDate: mode === "create" && values.startDate.trim() ? values.startDate.trim() : undefined,
     });
 
     if (!result.ok) {
@@ -152,6 +168,38 @@ export function MemberForm({ mode, member }: { mode: Mode; member?: Member }) {
             ))}
           </Select>
         </Field>
+
+        {mode === "create" && plans.length > 0 && (
+          <>
+            <Field label="Membership plan" htmlFor="planId" hint="Creates a subscription immediately">
+              <Select
+                id="planId"
+                value={values.planId}
+                onChange={(e) => set("planId", e.target.value)}
+              >
+                <option value="">No plan (assign later)</option>
+                {plans.map((plan) => (
+                  <option key={plan.id} value={plan.id} disabled={!plan.isActive}>
+                    {plan.name} · {formatMoneyCompact(plan.priceCents)}{" "}
+                    {billingPeriodLabel(plan.billingPeriod).toLowerCase()}
+                    {plan.isActive ? "" : " (retired)"}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+
+            {values.planId ? (
+              <Field label="Starts on" htmlFor="startDate" hint="Blank = today">
+                <Input
+                  id="startDate"
+                  type="date"
+                  value={values.startDate}
+                  onChange={(e) => set("startDate", e.target.value)}
+                />
+              </Field>
+            ) : null}
+          </>
+        )}
       </div>
 
       <label className="flex items-start gap-3.5 rounded-xl border border-zinc-200 bg-white p-4 cursor-pointer hover:bg-zinc-50 transition-colors shadow-sm">
@@ -183,3 +231,4 @@ export function MemberForm({ mode, member }: { mode: Mode; member?: Member }) {
     </form>
   );
 }
+

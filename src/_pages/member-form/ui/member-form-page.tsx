@@ -139,7 +139,7 @@ export async function MemberFormPage({ memberId }: { memberId?: string }) {
           <CardDescription>Only the name and phone number are required.</CardDescription>
         </CardHeader>
         <CardContent>
-          <MemberForm mode={member ? "edit" : "create"} member={member ?? undefined} />
+          <MemberForm mode={member ? "edit" : "create"} member={member ?? undefined} plans={plans} />
         </CardContent>
       </Card>
     </div>
