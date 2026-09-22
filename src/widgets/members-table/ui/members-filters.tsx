@@ -3,7 +3,8 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { Input, Select } from "@/shared/ui";
-import { STATUS_META, type MemberStatus } from "@/entities/member";
+import { STATUS_META, type MemberStatus, type MemberSortOption } from "@/entities/member";
+import type { Plan } from "@/entities/plan";
 
 const FILTERABLE: MemberStatus[] = [
   "active",
@@ -12,13 +13,32 @@ const FILTERABLE: MemberStatus[] = [
   "frozen",
 ];
 
+const SORT_OPTIONS: { value: MemberSortOption; label: string }[] = [
+  { value: "newest", label: "Newest joined" },
+  { value: "expiry_asc", label: "Expiring soonest" },
+  { value: "oldest", label: "Oldest joined" },
+  { value: "name_asc", label: "Name (A–Z)" },
+];
+
 /**
- * Optimized debounced live search and status filter component.
+ * Optimized debounced live search, status filter, plan filter, and sort order component.
  *
- * Keeps query and status in sync with URL searchParams, resetting pagination
+ * Keeps query, status, planId, and sort in sync with URL searchParams, resetting pagination
  * to page 1 on every filter change. Uses useTransition for non-blocking UI updates.
  */
-export function MembersFilters({ q, status }: { q: string; status: string }) {
+export function MembersFilters({
+  q,
+  status,
+  planId,
+  sort,
+  plans,
+}: {
+  q: string;
+  status: string;
+  planId: string;
+  sort: string;
+  plans: Plan[];
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -53,12 +73,12 @@ export function MembersFilters({ q, status }: { q: string; status: string }) {
     return () => clearTimeout(timer);
   }, [searchTerm, pathname, router, searchParams]);
 
-  const handleStatusChange = (newStatus: string) => {
+  const updateParam = (key: string, value: string, defaultValue: string = "all") => {
     const params = new URLSearchParams(searchParams.toString());
-    if (newStatus !== "all") {
-      params.set("status", newStatus);
+    if (value && value !== defaultValue) {
+      params.set(key, value);
     } else {
-      params.delete("status");
+      params.delete(key);
     }
     params.set("page", "1");
 
@@ -87,14 +107,43 @@ export function MembersFilters({ q, status }: { q: string; status: string }) {
       <Select
         name="status"
         value={status}
-        onChange={(e) => handleStatusChange(e.target.value)}
-        className="max-w-[190px]"
+        onChange={(e) => updateParam("status", e.target.value, "all")}
+        className="max-w-[170px]"
         aria-label="Filter by status"
       >
         <option value="all">All statuses</option>
         {FILTERABLE.map((value) => (
           <option key={value} value={value}>
             {STATUS_META[value]?.label ?? value}
+          </option>
+        ))}
+      </Select>
+
+      <Select
+        name="planId"
+        value={planId}
+        onChange={(e) => updateParam("planId", e.target.value, "all")}
+        className="max-w-[170px]"
+        aria-label="Filter by plan"
+      >
+        <option value="all">All plans</option>
+        {plans.map((p) => (
+          <option key={p.id} value={p.id}>
+            {p.name}
+          </option>
+        ))}
+      </Select>
+
+      <Select
+        name="sort"
+        value={sort}
+        onChange={(e) => updateParam("sort", e.target.value, "newest")}
+        className="max-w-[170px]"
+        aria-label="Sort order"
+      >
+        {SORT_OPTIONS.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
           </option>
         ))}
       </Select>

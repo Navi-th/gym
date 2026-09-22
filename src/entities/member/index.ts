@@ -10,6 +10,7 @@ export {
   getMembers,
   getAllMembers,
   type MemberFilter,
+  type MemberSortOption,
   type MemberWithStatus,
 } from "./api/get-members";
 export type { PaginatedResult } from "@/shared/lib";
