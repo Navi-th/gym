@@ -2,8 +2,8 @@ import { cn } from "@/shared/lib";
 
 export function Table({ className, ...props }: React.TableHTMLAttributes<HTMLTableElement>) {
   return (
-    <div className="w-full overflow-x-auto no-scrollbar -mx-5 px-5 sm:mx-0 sm:px-0">
-      <table className={cn("w-full min-w-[640px] border-collapse text-left", className)} {...props} />
+    <div className="w-full overflow-x-auto no-scrollbar -mx-3.5 px-3.5 sm:mx-0 sm:px-0">
+      <table className={cn("w-full min-w-[580px] sm:min-w-[640px] border-collapse text-left", className)} {...props} />
     </div>
   );
 }
@@ -24,7 +24,7 @@ export function TH({ className, ...props }: React.ThHTMLAttributes<HTMLTableCell
   return (
     <th
       className={cn(
-        "whitespace-nowrap px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-400",
+        "whitespace-nowrap px-2.5 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400",
         className
       )}
       {...props}
@@ -33,7 +33,7 @@ export function TH({ className, ...props }: React.ThHTMLAttributes<HTMLTableCell
 }
 
 export function TD({ className, ...props }: React.TdHTMLAttributes<HTMLTableCellElement>) {
-  return <td className={cn("px-4 py-3.5 text-xs sm:text-sm font-medium text-slate-800", className)} {...props} />;
+  return <td className={cn("px-2.5 sm:px-4 py-2 sm:py-3.5 text-xs sm:text-sm font-medium text-slate-800", className)} {...props} />;
 }
 
 /** Centred message row for empty / loading table states. */
@@ -46,7 +46,7 @@ export function TableMessage({
 }) {
   return (
     <tr>
-      <td colSpan={colSpan} className="px-4 py-12 text-center text-xs sm:text-sm text-slate-500">
+      <td colSpan={colSpan} className="px-3 py-8 text-center text-xs sm:text-sm text-slate-500">
         {children}
       </td>
     </tr>
