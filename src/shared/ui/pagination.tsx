@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./button";
 
 export interface PaginationProps {
@@ -53,8 +54,8 @@ function getPageNumbers(currentPage: number, totalPages: number): (number | "ell
 /**
  * Reusable, accessible, and responsive pagination bar.
  *
- * Designed for server-rendered Next.js pages with URL search parameter persistence
- * or client component state callbacks.
+ * Displays circular icon-only buttons on mobile devices (<640px) for Prev/Next,
+ * expanding to show text labels on desktop.
  */
 export function Pagination({
   page,
@@ -70,7 +71,7 @@ export function Pagination({
   if (totalCount <= 0 || totalPages <= 1) {
     if (totalCount > 0) {
       return (
-        <div className={`flex items-center justify-between pt-3 pb-1 text-xs text-zinc-500 font-medium ${className}`}>
+        <div className={`flex items-center justify-between pt-3 pb-1 text-xs text-slate-500 font-medium ${className}`}>
           <span>Showing 1–{totalCount} of {totalCount} items</span>
         </div>
       );
@@ -112,7 +113,7 @@ export function Pagination({
       return (
         <span
           key={`ellipsis-${index}`}
-          className="flex h-9 w-9 items-center justify-center text-xs font-semibold text-zinc-400 select-none"
+          className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center text-xs font-semibold text-slate-400 select-none"
         >
           •••
         </span>
@@ -128,10 +129,10 @@ export function Pagination({
           onClick={() => onPageChange(p)}
           aria-current={isActive ? "page" : undefined}
           aria-label={`Page ${p}`}
-          className={`flex h-9 w-9 items-center justify-center rounded-lg text-xs font-bold transition-colors ${
+          className={`flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full text-xs font-bold transition-all ${
             isActive
-              ? "bg-zinc-900 text-white shadow-sm"
-              : "bg-white text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 border border-zinc-200"
+              ? "bg-[#C4FF00] text-slate-900 shadow-xs"
+              : "bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-slate-200/80"
           }`}
         >
           {p}
@@ -145,10 +146,10 @@ export function Pagination({
         href={buildPageUrl(p)}
         aria-current={isActive ? "page" : undefined}
         aria-label={`Page ${p}`}
-        className={`flex h-9 w-9 items-center justify-center rounded-lg text-xs font-bold transition-colors ${
+        className={`flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full text-xs font-bold transition-all ${
           isActive
-            ? "bg-zinc-900 text-white shadow-sm"
-            : "bg-white text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 border border-zinc-200"
+            ? "bg-[#C4FF00] text-slate-900 shadow-xs"
+            : "bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-slate-200/80"
         }`}
       >
         {p}
@@ -162,12 +163,12 @@ export function Pagination({
   return (
     <nav
       aria-label="Pagination Navigation"
-      className={`flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 pb-2 ${className}`}
+      className={`flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 pb-2 ${className}`}
     >
-      <div className="text-xs text-zinc-500 font-medium">
-        Showing <span className="font-bold text-zinc-900">{startItem.toLocaleString()}</span> to{" "}
-        <span className="font-bold text-zinc-900">{endItem.toLocaleString()}</span> of{" "}
-        <span className="font-bold text-zinc-900">{totalCount.toLocaleString()}</span> items
+      <div className="text-xs text-slate-500 font-medium">
+        Showing <span className="font-bold text-slate-900">{startItem.toLocaleString()}</span> to{" "}
+        <span className="font-bold text-slate-900">{endItem.toLocaleString()}</span> of{" "}
+        <span className="font-bold text-slate-900">{totalCount.toLocaleString()}</span> items
       </div>
 
       <div className="flex items-center gap-1.5 flex-wrap justify-center">
@@ -178,18 +179,21 @@ export function Pagination({
             disabled={prevDisabled}
             onClick={() => onPageChange(page - 1)}
             aria-label="Previous Page"
-            className="h-9 px-3 text-xs"
+            className="h-8 sm:h-9 w-8 sm:w-auto p-0 sm:px-3 rounded-full flex items-center justify-center"
           >
-            ← Prev
+            <ChevronLeft className="h-4 w-4 shrink-0" />
+            <span className="hidden sm:inline">Prev</span>
           </Button>
         ) : prevDisabled ? (
-          <Button variant="secondary" disabled className="h-9 px-3 text-xs">
-            ← Prev
+          <Button variant="secondary" disabled className="h-8 sm:h-9 w-8 sm:w-auto p-0 sm:px-3 rounded-full flex items-center justify-center">
+            <ChevronLeft className="h-4 w-4 shrink-0" />
+            <span className="hidden sm:inline">Prev</span>
           </Button>
         ) : (
           <Link href={buildPageUrl(page - 1)} aria-label="Previous Page">
-            <Button variant="secondary" className="h-9 px-3 text-xs">
-              ← Prev
+            <Button variant="secondary" className="h-8 sm:h-9 w-8 sm:w-auto p-0 sm:px-3 rounded-full flex items-center justify-center">
+              <ChevronLeft className="h-4 w-4 shrink-0" />
+              <span className="hidden sm:inline">Prev</span>
             </Button>
           </Link>
         )}
@@ -206,18 +210,21 @@ export function Pagination({
             disabled={nextDisabled}
             onClick={() => onPageChange(page + 1)}
             aria-label="Next Page"
-            className="h-9 px-3 text-xs"
+            className="h-8 sm:h-9 w-8 sm:w-auto p-0 sm:px-3 rounded-full flex items-center justify-center"
           >
-            Next →
+            <span className="hidden sm:inline">Next</span>
+            <ChevronRight className="h-4 w-4 shrink-0" />
           </Button>
         ) : nextDisabled ? (
-          <Button variant="secondary" disabled className="h-9 px-3 text-xs">
-            Next →
+          <Button variant="secondary" disabled className="h-8 sm:h-9 w-8 sm:w-auto p-0 sm:px-3 rounded-full flex items-center justify-center">
+            <span className="hidden sm:inline">Next</span>
+            <ChevronRight className="h-4 w-4 shrink-0" />
           </Button>
         ) : (
           <Link href={buildPageUrl(page + 1)} aria-label="Next Page">
-            <Button variant="secondary" className="h-9 px-3 text-xs">
-              Next →
+            <Button variant="secondary" className="h-8 sm:h-9 w-8 sm:w-auto p-0 sm:px-3 rounded-full flex items-center justify-center">
+              <span className="hidden sm:inline">Next</span>
+              <ChevronRight className="h-4 w-4 shrink-0" />
             </Button>
           </Link>
         )}
