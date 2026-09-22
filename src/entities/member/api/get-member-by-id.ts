@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { and, eq, isNull } from "drizzle-orm";
-import { getDb, members as membersTable } from "@/shared/db";
+import { getDb, members as membersTable, plans as plansTable } from "@/shared/db";
 import { daysUntilExpiry, deriveMemberStatus } from "../model/status";
 import type { MemberWithStatus } from "./get-members";
 
@@ -11,18 +11,25 @@ export const getMemberById = cache(async function getMemberById(
   const db = getDb();
 
   const rows = await db
-    .select()
+    .select({
+      member: membersTable,
+      planName: plansTable.name,
+    })
     .from(membersTable)
+    .leftJoin(plansTable, eq(membersTable.planId, plansTable.id))
     .where(and(eq(membersTable.id, id), isNull(membersTable.deletedAt)))
     .limit(1);
 
-  const member = rows[0];
-  if (!member) return null;
+  const row = rows[0];
+  if (!row) return null;
+
+  const { member, planName } = row;
 
   return {
     ...member,
     status: deriveMemberStatus({ stage: member.stage, planEnd: member.planEnd }),
     daysLeft: member.planEnd ? daysUntilExpiry(member.planEnd) : null,
+    planName: planName ?? null,
   };
 });
 

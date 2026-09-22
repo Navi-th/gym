@@ -2,6 +2,7 @@ import { cache } from "react";
 import {
   and,
   desc,
+  eq,
   gt,
   gte,
   isNotNull,
@@ -14,7 +15,7 @@ import {
   sql,
   type SQL,
 } from "drizzle-orm";
-import { getDb, members as membersTable } from "@/shared/db";
+import { getDb, members as membersTable, plans as plansTable } from "@/shared/db";
 import { addDays, todayUtc, type PaginatedResult } from "@/shared/lib";
 import {
   daysUntilExpiry,
@@ -29,6 +30,8 @@ export type MemberWithStatus = Member & {
   status: MemberStatus;
   /** null when the member has no plan end date (e.g. a lead). */
   daysLeft: number | null;
+  /** Name of the active/assigned plan, or null if unassigned. */
+  planName: string | null;
 };
 
 export type MemberFilter = {
@@ -114,19 +117,24 @@ const getMembersCached = cache(
     const safePage = Math.min(Math.max(1, page), totalPages);
     const offset = (safePage - 1) * pageSize;
 
-    // 2. Fetch paginated rows directly in DB
+    // 2. Fetch paginated rows directly in DB with leftJoin to plans
     const rows = await db
-      .select()
+      .select({
+        member: membersTable,
+        planName: plansTable.name,
+      })
       .from(membersTable)
+      .leftJoin(plansTable, eq(membersTable.planId, plansTable.id))
       .where(and(...conditions))
       .orderBy(desc(membersTable.createdAt))
       .limit(pageSize)
       .offset(offset);
 
-    const data: MemberWithStatus[] = rows.map((m) => ({
+    const data: MemberWithStatus[] = rows.map(({ member: m, planName }) => ({
       ...m,
       status: deriveMemberStatus({ stage: m.stage, planEnd: m.planEnd, today }),
       daysLeft: m.planEnd ? daysUntilExpiry(m.planEnd, today) : null,
+      planName: planName ?? null,
     }));
 
     return {
@@ -158,14 +166,19 @@ export async function getAllMembers(): Promise<MemberWithStatus[]> {
   const db = getDb();
   const today = new Date();
   const rows = await db
-    .select()
+    .select({
+      member: membersTable,
+      planName: plansTable.name,
+    })
     .from(membersTable)
+    .leftJoin(plansTable, eq(membersTable.planId, plansTable.id))
     .where(isNull(membersTable.deletedAt))
     .orderBy(desc(membersTable.createdAt));
 
-  return rows.map((m) => ({
+  return rows.map(({ member: m, planName }) => ({
     ...m,
     status: deriveMemberStatus({ stage: m.stage, planEnd: m.planEnd, today }),
     daysLeft: m.planEnd ? daysUntilExpiry(m.planEnd, today) : null,
+    planName: planName ?? null,
   }));
 }
