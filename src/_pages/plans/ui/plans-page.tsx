@@ -36,12 +36,12 @@ async function PlansListSection() {
 export function PlansPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-5">
-      <header className="flex flex-wrap items-end justify-between gap-4">
+      <header className="flex items-center justify-between gap-4 pb-2 border-b border-slate-200/60">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-900">Plans</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-display">Plans</h1>
         </div>
         <Link href="/admin/plans/new">
-          <Button showPlus>New plan</Button>
+          <Button showPlus iconOnlyOnMobile>New plan</Button>
         </Link>
       </header>
 
