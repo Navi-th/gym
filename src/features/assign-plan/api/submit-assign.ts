@@ -8,7 +8,7 @@ export async function submitAssignPlan(payload: {
   planId: string;
   startDate?: string;
 }): Promise<AssignResult> {
-  const response = await fetch("/admin/api/subscriptions", {
+  const response = await fetch("/admin/api/members/subscriptions", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

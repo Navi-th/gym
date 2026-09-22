@@ -11,7 +11,7 @@ export async function submitSubscriptionAction(
   subscriptionId: string,
   input: ActionInput
 ): Promise<ActionResult> {
-  const response = await fetch(`/admin/api/subscriptions/${subscriptionId}`, {
+  const response = await fetch(`/admin/api/members/subscriptions/${subscriptionId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
