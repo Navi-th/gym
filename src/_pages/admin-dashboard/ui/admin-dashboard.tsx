@@ -17,7 +17,7 @@ async function StatsSection() {
   return (
     <div className="space-y-6">
       {/* 3-Column Micro-Stat Tiles */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-2.5 sm:gap-4">
         <StatTile
           icon={<Users className="w-4 h-4 text-emerald-600" />}
           value={counts.active.toLocaleString()}

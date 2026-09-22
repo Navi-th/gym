@@ -1,16 +1,15 @@
 import { cn } from "@/shared/lib";
 
 /**
- * Open-plan section container (Hallmark Anti-Card architecture).
- *
- * Removes heavy card boxes and shadows in favor of clean typographic hierarchy,
- * open whitespace, and hairline section dividers.
+ * Tactile card container matching high-end iOS mobile aesthetics.
+ * Features 24px rounded corners, pure white background, subtle hairline border,
+ * and generous 8pt grid padding (p-5 sm:p-6).
  */
 export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <section
+    <div
       className={cn(
-        "w-full space-y-4 pt-2 pb-6 border-b border-zinc-200/80 last:border-b-0",
+        "w-full bg-white rounded-[24px] p-5 sm:p-6 border border-slate-100 shadow-sm space-y-4",
         className
       )}
       {...props}
@@ -22,7 +21,7 @@ export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDiv
   return (
     <div
       className={cn(
-        "flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 pb-3 border-b border-zinc-200/80",
+        "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 pb-3 border-b border-slate-100",
         className
       )}
       {...props}
@@ -33,7 +32,7 @@ export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDiv
 export function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h2
-      className={cn("text-lg sm:text-xl font-black tracking-tight text-zinc-900", className)}
+      className={cn("text-lg font-bold tracking-tight text-slate-900 font-display", className)}
       {...props}
     />
   );
@@ -44,10 +43,10 @@ export function CardDescription({
   ...props
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
-    <p className={cn("text-xs sm:text-sm font-medium text-zinc-500 leading-relaxed", className)} {...props} />
+    <p className={cn("text-xs sm:text-sm font-medium text-slate-500 leading-relaxed", className)} {...props} />
   );
 }
 
 export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("pt-2", className)} {...props} />;
+  return <div className={cn("pt-1", className)} {...props} />;
 }
