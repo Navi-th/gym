@@ -9,7 +9,6 @@ import {
   Menu,
   MessageCircle,
   Package,
-  Repeat,
   Users,
   Wallet,
   X,
@@ -29,7 +28,6 @@ const NAV: NavItem[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/members", label: "Members", icon: Users },
   { href: "/admin/plans", label: "Plans", icon: Package },
-  { href: "/admin/subscriptions", label: "Subscriptions", icon: Repeat },
   { href: "/admin/payments", label: "Payments", icon: Wallet },
   { href: "/admin/reminders", label: "Reminders", icon: MessageCircle },
 ];
