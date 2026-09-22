@@ -31,6 +31,7 @@ type FormValues = {
   whatsappOptIn: boolean;
   planId: string;
   startDate: string;
+  paymentMethod: "cash" | "upi";
 };
 
 const STAGES: { value: MemberStage; label: string }[] = [
@@ -48,6 +49,7 @@ function initialValues(member?: Member): FormValues {
     whatsappOptIn: member?.whatsappOptIn ?? false,
     planId: "",
     startDate: "",
+    paymentMethod: "cash",
   };
 }
 
@@ -84,6 +86,7 @@ export function MemberForm({
       email: values.email.trim() === "" ? null : values.email,
       planId: mode === "create" && values.planId ? values.planId : undefined,
       startDate: mode === "create" && values.startDate.trim() ? values.startDate.trim() : undefined,
+      paymentMethod: mode === "create" && values.planId ? values.paymentMethod : undefined,
     });
 
     if (!result.ok) {
@@ -189,14 +192,27 @@ export function MemberForm({
             </Field>
 
             {values.planId ? (
-              <Field label="Starts on" htmlFor="startDate" hint="Blank = today">
-                <Input
-                  id="startDate"
-                  type="date"
-                  value={values.startDate}
-                  onChange={(e) => set("startDate", e.target.value)}
-                />
-              </Field>
+              <>
+                <Field label="Starts on" htmlFor="startDate" hint="Blank = today">
+                  <Input
+                    id="startDate"
+                    type="date"
+                    value={values.startDate}
+                    onChange={(e) => set("startDate", e.target.value)}
+                  />
+                </Field>
+
+                <Field label="Payment method" htmlFor="paymentMethod" hint="Auto records payment">
+                  <Select
+                    id="paymentMethod"
+                    value={values.paymentMethod}
+                    onChange={(e) => set("paymentMethod", e.target.value as "cash" | "upi")}
+                  >
+                    <option value="cash">Cash</option>
+                    <option value="upi">UPI</option>
+                  </Select>
+                </Field>
+              </>
             ) : null}
           </>
         )}
