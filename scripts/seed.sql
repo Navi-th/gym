@@ -1,23 +1,11 @@
 -- ---------------------------------------------------------------------------
 -- PULSE GYM - development seed data
 --
--- Contains base plans, message templates, and automation rules.
--- Synthetic member data removed for clean initial workspace.
+-- Contains base message templates and automation rules.
+-- Synthetic member and plan data removed for clean initial workspace.
 --
 -- Apply with:  npm run db:seed:local
 -- ---------------------------------------------------------------------------
-
--- Plans --------------------------------------------------------------------
--- Prices mirror the public landing page so the admin panel and the marketing
--- site can never disagree. price_cents is the amount charged PER BILLING
--- PERIOD, so annual rows hold 12x the displayed monthly-equivalent price.
-INSERT OR REPLACE INTO plans (id, name, price_cents, billing_period, duration_days, is_active) VALUES
-  ('plan_starter_monthly', 'Starter Pass',      3500, 'monthly',  30, 1),
-  ('plan_starter_annual',  'Starter Pass',     34800, 'annual',  365, 1),
-  ('plan_pro_monthly',     'Pro Athlete Pass',  6900, 'monthly',  30, 1),
-  ('plan_pro_annual',      'Pro Athlete Pass', 70800, 'annual',  365, 1),
-  ('plan_vip_monthly',     'Elite VIP Pass',   11900, 'monthly',  30, 1),
-  ('plan_vip_annual',      'Elite VIP Pass',  118800, 'annual',  365, 1);
 
 -- Message templates --------------------------------------------------------
 -- Mirrors what must be registered in the WhatsApp Manager. Business-initiated
