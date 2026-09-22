@@ -9,20 +9,26 @@ import {
 
 /**
  * HTTP layer for the member collection.
- *
- * These handlers parse requests, validate, and translate domain errors into
- * status codes. All database work belongs to the entity layer — nothing here
- * touches Drizzle.
  */
 
-/** GET /admin/api/members?q=&status= */
+/** GET /admin/api/members?q=&status=&page=&pageSize= */
 export async function listMembersHandler(request: Request) {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
   const status = url.searchParams.get("status") as MemberStatus | "all" | null;
+  const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
+  const pageSize = Math.max(1, Number(url.searchParams.get("pageSize")) || 10);
 
-  const members = await getMembers({ q, status });
-  return Response.json({ ok: true, count: members.length, members });
+  const result = await getMembers({ q, status, page, pageSize });
+
+  return Response.json({
+    ok: true,
+    count: result.totalCount,
+    page: result.page,
+    pageSize: result.pageSize,
+    totalPages: result.totalPages,
+    members: result.data,
+  });
 }
 
 /** POST /admin/api/members */
@@ -36,8 +42,6 @@ export async function createMemberHandler(request: Request) {
 
   const result = validateMemberInput(body);
   if (!result.ok) {
-    // 422 rather than 400: the JSON parsed fine, the values are wrong. The
-    // errors object is keyed by field so the form can highlight inputs.
     return Response.json({ ok: false, errors: result.errors }, { status: 422 });
   }
 

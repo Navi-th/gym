@@ -8,17 +8,24 @@ import {
 
 /**
  * HTTP layer for subscriptions.
- *
- * This is where orchestration lives: assigning a plan needs the member, the
- * plan and the subscription entity together, and the entity slices themselves
- * may not import each other. Route handlers sit above them, so this is the
- * correct place to join the pieces up.
  */
 
-/** GET /admin/api/subscriptions */
-export async function listSubscriptionsHandler() {
-  const subscriptions = await getSubscriptions();
-  return Response.json({ ok: true, count: subscriptions.length, subscriptions });
+/** GET /admin/api/subscriptions?page=&pageSize= */
+export async function listSubscriptionsHandler(request: Request) {
+  const url = new URL(request.url);
+  const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
+  const pageSize = Math.max(1, Number(url.searchParams.get("pageSize")) || 10);
+
+  const result = await getSubscriptions({ page, pageSize });
+
+  return Response.json({
+    ok: true,
+    count: result.totalCount,
+    page: result.page,
+    pageSize: result.pageSize,
+    totalPages: result.totalPages,
+    subscriptions: result.data,
+  });
 }
 
 /** POST /admin/api/subscriptions  { memberId, planId, startDate? } */
@@ -59,8 +66,6 @@ export async function assignPlanHandler(request: Request) {
     const subscription = await assignPlan({
       memberId: member.id,
       planId: plan.id,
-      // Duration and price come from the plan the handler just loaded — the
-      // subscription entity cannot look them up itself.
       durationDays: plan.durationDays,
       priceCents: plan.priceCents,
       startDate,

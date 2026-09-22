@@ -12,39 +12,30 @@ import { todayUtc } from "@/shared/lib";
 
 /** HTTP layer for payments. */
 
-/** GET /admin/api/payments  (?limit=50) */
+/** GET /admin/api/payments  (?page=1&pageSize=10) */
 export async function listPaymentsHandler(request: Request) {
   const url = new URL(request.url);
-  const limitParam = Number(url.searchParams.get("limit"));
-  const limit = Number.isInteger(limitParam) && limitParam > 0 ? limitParam : 100;
+  const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
+  const pageSize = Math.max(1, Number(url.searchParams.get("pageSize")) || Number(url.searchParams.get("limit")) || 10);
 
-  const [payments, totals] = await Promise.all([
-    getPayments({ limit }),
+  const [paymentsResult, totals] = await Promise.all([
+    getPayments({ page, pageSize }),
     getRevenueTotals(todayUtc().slice(0, 7)),
   ]);
 
-  return Response.json({ ok: true, count: payments.length, totals, payments });
+  return Response.json({
+    ok: true,
+    count: paymentsResult.totalCount,
+    page: paymentsResult.page,
+    pageSize: paymentsResult.pageSize,
+    totalPages: paymentsResult.totalPages,
+    totals,
+    payments: paymentsResult.data,
+  });
 }
 
 /**
  * POST /admin/api/payments
- *
- * Body: { memberId, amountCents, method, paidAt?, subscriptionId?, renew?,
- *         periodStart?, periodEnd?, reference?, note? }
- *
- * With `renew: true` this does two things: extends cover, then records the
- * money. Those are two sequential writes and NOT one transaction, which is a
- * deliberate, documented trade-off rather than an oversight:
- *
- *   - Extend first, then record. If the second write fails, the member has
- *     cover but no payment row — visible on the payments page and easy for
- *     staff to re-record.
- *   - The reverse order would risk taking money and recording it while the
- *     member is locked out of a gym they just paid for.
- *
- * Of the two possible half-states, this is the one that does not hurt the
- * member. Making it genuinely atomic needs a single combined operation living
- * in one entity, which is the natural next step if this flow grows.
  */
 export async function recordPaymentHandler(request: Request) {
   let body: Partial<PaymentInput> & { renew?: boolean };
@@ -91,8 +82,6 @@ export async function recordPaymentHandler(request: Request) {
       priceCents: plan.priceCents,
     });
 
-    // Stamp the payment with the period it just bought, so the money and the
-    // cover it paid for line up in the ledger.
     if (renewedSubscription) {
       periodStart = renewedSubscription.startDate;
       periodEnd = renewedSubscription.endDate;

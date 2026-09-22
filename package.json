@@ -18,6 +18,8 @@
     "db:migrate:remote": "wrangler d1 migrations apply gym-app-db --remote",
     "db:seed:local": "wrangler d1 execute gym-app-db --local --file=./scripts/seed.sql",
     "db:seed:remote": "wrangler d1 execute gym-app-db --remote --file=./scripts/seed.sql",
+    "db:seed1000:local": "wrangler d1 execute gym-app-db --local --file=./scripts/seed-1000.sql",
+    "db:seed1000:remote": "wrangler d1 execute gym-app-db --remote --file=./scripts/seed-1000.sql",
     "db:reset:local": "rm -rf .wrangler/state/v3/d1 && npm run db:migrate:local && npm run db:seed:local",
     "db:studio": "drizzle-kit studio",
     "build:cf": "opennextjs-cloudflare build --dangerouslyUseUnsupportedNextVersion",
@@ -25,12 +27,15 @@
     "deploy": "opennextjs-cloudflare build --dangerouslyUseUnsupportedNextVersion && wrangler deploy"
   },
   "dependencies": {
+    "@next/bundle-analyzer": "^16.3.5",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.2",
     "lucide-react": "^0.453.0",
     "next": "^14.2.15",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-is": "^19.3.0",
+    "recharts": "^3.10.1",
     "tailwind-merge": "^2.5.4"
   },
   "devDependencies": {

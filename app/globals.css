@@ -16,9 +16,9 @@
   --color-button-bg: oklch(0.10 0 0);     /* Black Button Background */
   --color-button-fg: oklch(1 0 0);        /* White Text on Buttons */
 
-  /* Typography Tokens */
-  --font-display: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
-  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  /* Typography Tokens with System Fallbacks for Zero FOUT */
+  --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 html, body {
@@ -26,6 +26,7 @@ html, body {
   background-color: #f8fafc;
   color: #09090b;
   font-family: var(--font-body);
+  text-rendering: optimizeSpeed;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -49,4 +50,22 @@ h1, h2, h3, h4, h5, h6 {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #09090b;
+}
+
+/* Low-end hardware acceleration & rendering optimizations */
+@layer utilities {
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform, opacity;
+  }
+}
+
+/* Reduced motion for low-power hardware & battery saving */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

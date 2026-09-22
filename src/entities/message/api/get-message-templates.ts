@@ -1,14 +1,15 @@
+import { cache } from "react";
 import { desc, eq } from "drizzle-orm";
 import { getDb, messageTemplates as templatesTable } from "@/shared/db";
 
 export type MessageTemplate = typeof templatesTable.$inferSelect;
 
-export async function getMessageTemplates(): Promise<MessageTemplate[]> {
+export const getMessageTemplates = cache(async function getMessageTemplates(): Promise<MessageTemplate[]> {
   const db = getDb();
   return db.select().from(templatesTable).orderBy(desc(templatesTable.createdAt));
-}
+});
 
-export async function getMessageTemplateByKey(
+export const getMessageTemplateByKey = cache(async function getMessageTemplateByKey(
   key: string
 ): Promise<MessageTemplate | null> {
   const db = getDb();
@@ -19,4 +20,5 @@ export async function getMessageTemplateByKey(
     .limit(1);
 
   return rows[0] ?? null;
-}
+});
+

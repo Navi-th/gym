@@ -10,3 +10,6 @@ export * from "./card";
 export * from "./input";
 export * from "./skeleton";
 export * from "./table";
+export * from "./table-skeleton";
+export * from "./pagination";
+

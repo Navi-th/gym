@@ -1,6 +1,27 @@
-import { and, isNull, like, or, type SQL } from "drizzle-orm";
+import { cache } from "react";
+import {
+  and,
+  desc,
+  gt,
+  gte,
+  isNotNull,
+  isNull,
+  like,
+  lt,
+  lte,
+  ne,
+  or,
+  sql,
+  type SQL,
+} from "drizzle-orm";
 import { getDb, members as membersTable } from "@/shared/db";
-import { daysUntilExpiry, deriveMemberStatus, type MemberStatus } from "../model/status";
+import { addDays, todayUtc, type PaginatedResult } from "@/shared/lib";
+import {
+  daysUntilExpiry,
+  deriveMemberStatus,
+  EXPIRING_SOON_DAYS,
+  type MemberStatus,
+} from "../model/status";
 import type { Member } from "../model/types";
 
 /** A member with its DERIVED status attached, ready for display. */
@@ -14,22 +35,19 @@ export type MemberFilter = {
   /** Free-text match against name, phone or member code. */
   q?: string | null;
   status?: MemberStatus | "all" | null;
+  page?: number;
+  pageSize?: number;
 };
 
-/**
- * Non-archived members, each with its derived status.
- *
- * Always prefer this over reading `member.stage` directly: `stage` holds only
- * manual states, so it will happily report "active" for someone whose plan
- * lapsed last month.
- */
-export async function getMembers(filter: MemberFilter = {}): Promise<MemberWithStatus[]> {
-  const db = getDb();
+function buildMemberConditions(
+  q: string | null,
+  status: MemberStatus | "all" | null,
+  todayStr: string = todayUtc()
+): SQL[] {
   const conditions: SQL[] = [isNull(membersTable.deletedAt)];
 
-  const term = filter.q?.trim();
-  if (term) {
-    const pattern = `%${term}%`;
+  if (q) {
+    const pattern = `%${q}%`;
     const search = or(
       like(membersTable.fullName, pattern),
       like(membersTable.phone, pattern),
@@ -38,23 +56,116 @@ export async function getMembers(filter: MemberFilter = {}): Promise<MemberWithS
     if (search) conditions.push(search);
   }
 
+  if (status && status !== "all") {
+    const expiringSoonStr = addDays(todayStr, EXPIRING_SOON_DAYS);
+
+    if (status === "frozen") {
+      conditions.push(sql`${membersTable.stage} = 'frozen'`);
+    } else if (status === "expired") {
+      conditions.push(
+        and(
+          ne(membersTable.stage, "frozen"),
+          isNotNull(membersTable.planEnd),
+          lt(membersTable.planEnd, todayStr)
+        )!
+      );
+    } else if (status === "expiring_soon") {
+      conditions.push(
+        and(
+          ne(membersTable.stage, "frozen"),
+          isNotNull(membersTable.planEnd),
+          gte(membersTable.planEnd, todayStr),
+          lte(membersTable.planEnd, expiringSoonStr)
+        )!
+      );
+    } else if (status === "active") {
+      conditions.push(
+        and(
+          ne(membersTable.stage, "frozen"),
+          or(isNull(membersTable.planEnd), gt(membersTable.planEnd, expiringSoonStr))
+        )!
+      );
+    }
+  }
+
+  return conditions;
+}
+
+const getMembersCached = cache(
+  async (
+    q: string | null,
+    status: MemberStatus | "all" | null,
+    page: number,
+    pageSize: number
+  ): Promise<PaginatedResult<MemberWithStatus>> => {
+    const db = getDb();
+    const today = new Date();
+    const todayStr = todayUtc();
+    const conditions = buildMemberConditions(q, status, todayStr);
+
+    // 1. Get total count directly in DB
+    const countResult = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(membersTable)
+      .where(and(...conditions));
+
+    const totalCount = Number(countResult[0]?.count ?? 0);
+    const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+    const safePage = Math.min(Math.max(1, page), totalPages);
+    const offset = (safePage - 1) * pageSize;
+
+    // 2. Fetch paginated rows directly in DB
+    const rows = await db
+      .select()
+      .from(membersTable)
+      .where(and(...conditions))
+      .orderBy(desc(membersTable.createdAt))
+      .limit(pageSize)
+      .offset(offset);
+
+    const data: MemberWithStatus[] = rows.map((m) => ({
+      ...m,
+      status: deriveMemberStatus({ stage: m.stage, planEnd: m.planEnd, today }),
+      daysLeft: m.planEnd ? daysUntilExpiry(m.planEnd, today) : null,
+    }));
+
+    return {
+      data,
+      totalCount,
+      page: safePage,
+      pageSize,
+      totalPages,
+    };
+  }
+);
+
+/**
+ * Non-archived members, paginated (10 per page by default) with derived statuses.
+ */
+export async function getMembers(
+  filter: MemberFilter = {}
+): Promise<PaginatedResult<MemberWithStatus>> {
+  const q = filter.q?.trim() ?? null;
+  const status = filter.status ?? null;
+  const page = Math.max(1, filter.page ?? 1);
+  const pageSize = Math.max(1, filter.pageSize ?? 10);
+
+  return getMembersCached(q, status, page, pageSize);
+}
+
+/** Fetch all non-archived members (unpaginated), used for aggregate dashboards & queue calculators. */
+export async function getAllMembers(): Promise<MemberWithStatus[]> {
+  const db = getDb();
+  const today = new Date();
   const rows = await db
     .select()
     .from(membersTable)
-    .where(and(...conditions));
+    .where(isNull(membersTable.deletedAt))
+    .orderBy(desc(membersTable.createdAt));
 
-  const withStatus: MemberWithStatus[] = rows.map((m) => ({
+  return rows.map((m) => ({
     ...m,
-    status: deriveMemberStatus({ stage: m.stage, planEnd: m.planEnd }),
-    daysLeft: m.planEnd ? daysUntilExpiry(m.planEnd) : null,
+    status: deriveMemberStatus({ stage: m.stage, planEnd: m.planEnd, today }),
+    daysLeft: m.planEnd ? daysUntilExpiry(m.planEnd, today) : null,
   }));
-
-  // Status is DERIVED, so it cannot be filtered in SQL without restating the
-  // expiry rule as a SQL expression — which would immediately become a second
-  // source of truth. Filtering here is correct and keeps one rule. If the
-  // table ever grows large, express it in SQL but keep deriveMemberStatus
-  // authoritative and test the two against each other.
-  const status = filter.status;
-  if (!status || status === "all") return withStatus;
-  return withStatus.filter((m) => m.status === status);
 }

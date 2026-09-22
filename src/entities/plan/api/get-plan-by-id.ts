@@ -1,8 +1,11 @@
+import { cache } from "react";
 import { eq } from "drizzle-orm";
 import { getDb, plans as plansTable } from "@/shared/db";
 import type { Plan } from "../model/types";
 
-export async function getPlanById(id: string): Promise<Plan | null> {
+export const getPlanById = cache(async function getPlanById(
+  id: string
+): Promise<Plan | null> {
   const db = getDb();
   const rows = await db
     .select()
@@ -11,4 +14,5 @@ export async function getPlanById(id: string): Promise<Plan | null> {
     .limit(1);
 
   return rows[0] ?? null;
-}
+});
+

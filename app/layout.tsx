@@ -1,13 +1,44 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-plus-jakarta",
+  display: "swap",
+});
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#09090b",
+};
+
 export const metadata: Metadata = {
-  title: "PULSE GYM Admin",
-  description: "Membership, subscriptions, payments and WhatsApp reminders.",
-  // The whole application is the admin panel, so none of it belongs in a search
-  // index. Cloudflare Access keeps people out; this keeps crawlers from
-  // advertising the URL in the first place.
-  robots: { index: false, follow: false },
+  title: {
+    default: "PULSE GYM — Admin & Management Console",
+    template: "%s | PULSE GYM",
+  },
+  description: "Gym management system for member registration, active subscriptions, revenue tracking, and automated WhatsApp payment reminders.",
+  keywords: ["gym management", "fitness center software", "subscriptions", "members", "payments"],
+  authors: [{ name: "PULSE GYM" }],
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    title: "PULSE GYM — Admin Console",
+    description: "Gym management, membership subscriptions, payments, and WhatsApp reminders.",
+    type: "website",
+    locale: "en_US",
+    siteName: "PULSE GYM",
+  },
 };
 
 export default function RootLayout({
@@ -16,15 +47,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet" />
-      </head>
+    <html lang="en" className={`${inter.variable} ${plusJakartaSans.variable}`}>
       <body className="antialiased bg-slate-50 text-zinc-900 min-h-screen flex flex-col selection:bg-black selection:text-white">
         {children}
       </body>
     </html>
   );
 }
+

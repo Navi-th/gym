@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { count, like, sum } from "drizzle-orm";
 import { getDb, payments as paymentsTable } from "@/shared/db";
 
@@ -19,7 +20,9 @@ export type RevenueTotals = {
  * These are totals of what was RECORDED, which is not the same as revenue
  * earned — cash taken for a future period is recorded today.
  */
-export async function getRevenueTotals(monthPrefix: string): Promise<RevenueTotals> {
+export const getRevenueTotals = cache(async function getRevenueTotals(
+  monthPrefix: string
+): Promise<RevenueTotals> {
   const db = getDb();
 
   const [allTime, month, counted] = await Promise.all([
@@ -37,4 +40,5 @@ export async function getRevenueTotals(monthPrefix: string): Promise<RevenueTota
     monthCents: Number(month[0]?.value ?? 0),
     paymentCount: counted[0]?.value ?? 0,
   };
-}
+});
+

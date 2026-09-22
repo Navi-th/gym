@@ -8,7 +8,12 @@
 
 // --- data access -----------------------------------------------------------
 export { recordPayment } from "./api/record-payment";
-export { getPayments, type PaymentWithMember } from "./api/get-payments";
+export {
+  getPayments,
+  getAllPayments,
+  type PaymentFilter,
+  type PaymentWithMember,
+} from "./api/get-payments";
 export { getMemberPayments } from "./api/get-member-payments";
 export { getRevenueTotals, type RevenueTotals } from "./api/get-revenue-totals";
 

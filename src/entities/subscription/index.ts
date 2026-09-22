@@ -15,6 +15,8 @@ export { getActiveSubscription } from "./api/get-active-subscription";
 export { countSubscriptionsForPlan } from "./api/count-subscriptions-for-plan";
 export {
   getSubscriptions,
+  getAllSubscriptions,
+  type SubscriptionFilter,
   type SubscriptionWithMember,
 } from "./api/get-subscriptions";
 
