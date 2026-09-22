@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Skeleton } from "@/shared/ui";
+import { Skeleton, StatTile } from "@/shared/ui";
 import {
   countMembersByStatus,
   getAllMembers,
@@ -8,11 +8,38 @@ import {
 import { getPlans, planNameById } from "@/entities/plan";
 import { MemberStats } from "@/widgets/member-stats";
 import { RenewalsQueue } from "@/widgets/renewals-queue";
+import { Users, AlertTriangle, UserX, Activity } from "lucide-react";
 
 async function StatsSection() {
   const members = await getAllMembers();
   const counts = countMembersByStatus(members);
-  return <MemberStats counts={counts} />;
+
+  return (
+    <div className="space-y-6">
+      {/* 3-Column Micro-Stat Tiles */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <StatTile
+          icon={<Users className="w-4 h-4 text-emerald-600" />}
+          value={counts.active.toLocaleString()}
+          label="Active Members"
+          trend="Active"
+        />
+        <StatTile
+          icon={<AlertTriangle className="w-4 h-4 text-amber-600" />}
+          value={counts.expiring_soon.toLocaleString()}
+          label="Expiring Soon (7 Days)"
+        />
+        <StatTile
+          icon={<UserX className="w-4 h-4 text-rose-600" />}
+          value={counts.expired.toLocaleString()}
+          label="Lapsed Memberships"
+        />
+      </div>
+
+      {/* Distribution Chart Card */}
+      <MemberStats counts={counts} />
+    </div>
+  );
 }
 
 async function QueueSection() {
@@ -24,22 +51,33 @@ async function QueueSection() {
 
 export function AdminDashboardPage() {
   return (
-    <div className="mx-auto max-w-6xl space-y-5 sm:space-y-8">
-      <header>
-        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-900">Dashboard</h1>
-        <p className="mt-1 text-xs sm:text-sm text-zinc-500 font-medium leading-relaxed">
-          Live from Cloudflare D1. Membership status is derived from expiry dates.
-        </p>
+    <div className="mx-auto max-w-6xl space-y-6">
+      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-200/60">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#88C400] animate-pulse" />
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-display">
+              Gym Dashboard
+            </h1>
+          </div>
+          <p className="mt-1 text-xs sm:text-sm text-slate-500 font-medium">
+            Real-time membership status & subscription renewals console.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <div className="px-3.5 py-1.5 rounded-full bg-[#C4FF00] text-slate-900 text-xs font-bold flex items-center gap-1.5 shadow-xs">
+            <Activity className="w-3.5 h-3.5" />
+            <span>Live Stream</span>
+          </div>
+        </div>
       </header>
 
       <Suspense
         fallback={
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 border-y border-zinc-200/90 py-5 sm:py-6">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="space-y-3 pt-3 border-t-2 border-zinc-200 px-1">
-                <Skeleton className="h-3.5 w-20" />
-                <Skeleton className="h-9 w-20" />
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className="h-32 w-full rounded-[16px]" />
             ))}
           </div>
         }
@@ -51,7 +89,7 @@ export function AdminDashboardPage() {
         fallback={
           <div className="space-y-3 pt-4">
             <Skeleton className="h-6 w-40" />
-            <Skeleton className="h-48 w-full rounded-xl" />
+            <Skeleton className="h-48 w-full rounded-[24px]" />
           </div>
         }
       >

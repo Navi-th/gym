@@ -31,7 +31,7 @@ export function MemberDistributionChart({ counts }: MemberDistributionChartProps
   const total = Object.values(counts).reduce((sum, n) => sum + n, 0);
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-between gap-6 rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-sm">
+    <div className="flex flex-col md:flex-row items-center justify-between gap-6 rounded-[24px] border border-slate-100 bg-white p-6 shadow-sm">
       {/* Recharts Donut Ring */}
       <div className="relative h-48 w-48 shrink-0">
         <ResponsiveContainer width="100%" height="100%">
