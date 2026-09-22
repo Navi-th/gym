@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui";
+import { BackButton, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui";
 import { getPlanById } from "@/entities/plan";
 import { countSubscriptionsForPlan } from "@/entities/subscription";
 import { PlanForm } from "@/features/save-plan";
@@ -17,21 +17,18 @@ export async function PlanFormPage({ planId }: { planId?: string }) {
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">
-      <header>
-        <Link
-          href="/admin/plans"
-          className="text-xs font-bold text-zinc-500 transition-colors hover:text-zinc-900"
-        >
-          ← Plans
-        </Link>
-        <h1 className="mt-2 text-2xl font-black tracking-tight text-zinc-900">
-          {plan ? plan.name : "New plan"}
-        </h1>
-        <p className="mt-1 text-sm text-zinc-500">
-          {plan
-            ? "Changing price or duration applies to future assignments."
-            : "Give it a name, a price and how many days of cover it buys."}
-        </p>
+      <header className="space-y-3">
+        <BackButton href="/admin/plans" label="Plans" />
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-display">
+            {plan ? plan.name : "New plan"}
+          </h1>
+          <p className="mt-1 text-xs sm:text-sm text-slate-500 font-medium leading-relaxed">
+            {plan
+              ? "Changing price or duration applies to future assignments."
+              : "Give it a name, a price and how many days of cover it buys."}
+          </p>
+        </div>
       </header>
 
       <Card>

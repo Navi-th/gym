@@ -5,26 +5,42 @@
 @import "tailwindcss/utilities";
 
 :root {
-  /* Hallmark Locked Tokens — Light Theme (White Background + Black Buttons) */
-  --color-bg-root: oklch(0.98 0 0);       /* Soft Clean White Background */
-  --color-surface: oklch(1 0 0);          /* Pure White Card Surface */
-  --color-surface-hover: oklch(0.96 0 0); /* Surface Hover */
-  --color-border: oklch(0.90 0 0);        /* Subtle Border */
-  --color-border-strong: oklch(0.80 0 0); /* Strong Border */
-  --color-text-primary: oklch(0.12 0 0);  /* Deep Black Text */
-  --color-text-secondary: oklch(0.45 0 0);/* Muted Text */
-  --color-button-bg: oklch(0.10 0 0);     /* Black Button Background */
-  --color-button-fg: oklch(1 0 0);        /* White Text on Buttons */
+  /* Canvas & Card Surfaces */
+  --color-bg-root: oklch(0.97 0.005 250);       /* Soft Porcelain Canvas */
+  --color-surface-card: oklch(1 0 0);           /* Pure White Floating Cards */
+  --color-surface-subtle: oklch(0.94 0.005 250); /* Pill Track & Input Container */
+  --color-border-hairline: oklch(0.92 0.005 250);/* Soft Hairline Divider Rule */
 
-  /* Typography Tokens with System Fallbacks for Zero FOUT */
-  --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* Text & Ink Tokens */
+  --color-text-primary: oklch(0.18 0.01 250);   /* Deep Charcoal Ink */
+  --color-text-secondary: oklch(0.55 0.015 250);/* Muted Slate Gray */
+  --color-text-tertiary: oklch(0.70 0.01 250); /* Light Placeholder Gray */
+
+  /* Brand Accent & Highlights */
+  --color-accent-lime: oklch(0.88 0.25 132);    /* Electric Volt Lime (#C4FF00) */
+  --color-accent-lime-fg: oklch(0.12 0.02 250); /* Dark Ink Text on Lime Pills */
+  
+  /* Status Signals */
+  --color-status-success: oklch(0.72 0.18 145); /* Emerald Active Badge */
+  --color-status-warning: oklch(0.78 0.18 75);  /* Amber Expiring Badge */
+  --color-status-error: oklch(0.62 0.22 25);    /* Crimson Expired Badge */
+
+  /* Typography Scale */
+  --font-display: var(--font-plus-jakarta), system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: var(--font-plus-jakarta), system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* Corner Radius Scale */
+  --radius-card: 24px;
+  --radius-stat: 16px;
+  --radius-pill: 9999px;
+  --radius-icon: 12px;
 }
 
 html, body {
   overflow-x: clip;
-  background-color: #f8fafc;
-  color: #09090b;
+  background-color: var(--color-bg-root);
+  color: var(--color-text-primary);
   font-family: var(--font-body);
   text-rendering: optimizeSpeed;
 }
@@ -52,6 +68,16 @@ h1, h2, h3, h4, h5, h6 {
   background: #09090b;
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
 /* Low-end hardware acceleration & rendering optimizations */
 @layer utilities {
   .gpu-accelerated {
@@ -69,3 +95,4 @@ h1, h2, h3, h4, h5, h6 {
     scroll-behavior: auto !important;
   }
 }
+

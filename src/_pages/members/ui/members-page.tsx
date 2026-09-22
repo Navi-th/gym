@@ -57,12 +57,12 @@ export function MembersPage({
 
   return (
     <div className="mx-auto max-w-6xl space-y-5">
-      <header className="flex flex-wrap items-end justify-between gap-4">
+      <header className="flex items-center justify-between gap-4 pb-2 border-b border-slate-200/60">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-900">Members</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-display">Members</h1>
         </div>
         <Link href="/admin/members/new">
-          <Button showPlus>Add member</Button>
+          <Button showPlus iconOnlyOnMobile>Add member</Button>
         </Link>
       </header>
 
