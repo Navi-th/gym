@@ -12,4 +12,5 @@ export * from "./skeleton";
 export * from "./table";
 export * from "./table-skeleton";
 export * from "./pagination";
+export * from "./segmented-track";
 
