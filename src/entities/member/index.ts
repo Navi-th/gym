@@ -10,6 +10,7 @@ export {
   getMembers,
   getAllMembers,
   type MemberFilter,
+  type MemberSortOption,
   type MemberWithStatus,
 } from "./api/get-members";
 export type { PaginatedResult } from "@/shared/lib";
@@ -17,6 +18,8 @@ export { getMemberById } from "./api/get-member-by-id";
 export { createMember } from "./api/create-member";
 export { updateMember } from "./api/update-member";
 export { archiveMember } from "./api/archive-member";
+export { assignPlanToMember } from "./api/assign-plan";
+export { renewMemberPlan } from "./api/renew-plan";
 
 // --- model -----------------------------------------------------------------
 export {

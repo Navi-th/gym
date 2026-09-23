@@ -1,4 +1,5 @@
 import {
+  assignPlanToMember,
   createMember,
   DuplicatePhoneError,
   getMembers,
@@ -7,7 +8,6 @@ import {
   type MemberStatus,
 } from "@/entities/member";
 import { getPlanById } from "@/entities/plan";
-import { assignPlan } from "@/entities/subscription";
 
 /**
  * HTTP layer for the member collection.
@@ -35,9 +35,9 @@ export async function listMembersHandler(request: Request) {
 
 /** POST /admin/api/members */
 export async function createMemberHandler(request: Request) {
-  let body: Partial<MemberInput> & { planId?: string; startDate?: string };
+  let body: Partial<MemberInput> & { planId?: string; paymentMethod?: string };
   try {
-    body = (await request.json()) as Partial<MemberInput> & { planId?: string; startDate?: string };
+    body = (await request.json()) as Partial<MemberInput> & { planId?: string; paymentMethod?: string };
   } catch {
     return Response.json({ ok: false, error: "Invalid JSON body." }, { status: 400 });
   }
@@ -53,13 +53,13 @@ export async function createMemberHandler(request: Request) {
     if (body.planId && typeof body.planId === "string") {
       const plan = await getPlanById(body.planId);
       if (plan && plan.isActive) {
-        const startDate = typeof body.startDate === "string" && body.startDate.trim() ? body.startDate.trim() : undefined;
-        await assignPlan({
+        const method = (body.paymentMethod === "upi" ? "upi" : "cash") as "cash" | "upi" | "card" | "bank";
+        await assignPlanToMember({
           memberId: member.id,
           planId: plan.id,
           durationDays: plan.durationDays,
           priceCents: plan.priceCents,
-          startDate,
+          paymentMethod: method,
         });
       }
     }
@@ -75,4 +75,3 @@ export async function createMemberHandler(request: Request) {
     throw error;
   }
 }
-

@@ -14,7 +14,7 @@ import type { Config } from "drizzle-kit";
  * `migrations_dir: "drizzle"` in wrangler.jsonc points wrangler at this output.
  */
 export default {
-  schema: "./src/lib/db/schema.ts",
+  schema: "./src/shared/db/schema.ts",
   out: "./drizzle",
   dialect: "sqlite",
 } satisfies Config;

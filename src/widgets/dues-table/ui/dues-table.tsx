@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
+  Button,
   Card,
   CardContent,
   CardDescription,
@@ -17,25 +19,17 @@ import {
   TableMessage,
 } from "@/shared/ui";
 import { daysOverdue } from "@/entities/payment";
-import { PaymentForm } from "@/features/record-payment";
 import { formatDate, formatMoneyCompact, initials } from "@/shared/lib";
 
-/** Plain row shape so this widget needs no entity types and stays testable. */
 export type DueRow = {
   memberId: string;
   memberName: string;
   memberCode: string;
   planEnd: string;
   planName: string;
-  subscriptionId: string | null;
   planPriceCents: number;
-  planDurationDays: number;
 };
 
-/**
- * Members in arrears, with the paying action inline.
- * Paginated at 10 per page.
- */
 export function DuesTable({
   rows,
   today,
@@ -69,7 +63,7 @@ export function DuesTable({
                 <TH>Plan</TH>
                 <TH>Lapsed</TH>
                 <TH>Owed</TH>
-                <TH className="text-right">Record payment</TH>
+                <TH className="text-right">Action</TH>
               </TR>
             </THead>
             <TBody>
@@ -109,12 +103,11 @@ export function DuesTable({
                       </TD>
                       <TD className="text-right">
                         <div className="flex justify-end">
-                          <PaymentForm
-                            memberId={row.memberId}
-                            subscriptionId={row.subscriptionId}
-                            suggestedAmountCents={row.planPriceCents}
-                            suggestedDurationDays={row.planDurationDays}
-                          />
+                          <Link href={`/admin/members/${row.memberId}`}>
+                            <Button size="sm" variant="secondary">
+                              Renew
+                            </Button>
+                          </Link>
                         </div>
                       </TD>
                     </TR>

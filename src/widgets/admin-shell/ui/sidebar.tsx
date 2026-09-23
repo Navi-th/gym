@@ -9,7 +9,6 @@ import {
   Menu,
   MessageCircle,
   Package,
-  Repeat,
   Users,
   Wallet,
   X,
@@ -29,7 +28,6 @@ const NAV: NavItem[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/members", label: "Members", icon: Users },
   { href: "/admin/plans", label: "Plans", icon: Package },
-  { href: "/admin/subscriptions", label: "Subscriptions", icon: Repeat },
   { href: "/admin/payments", label: "Payments", icon: Wallet },
   { href: "/admin/reminders", label: "Reminders", icon: MessageCircle },
 ];
@@ -75,7 +73,7 @@ export function Sidebar() {
             </div>
             <div className="min-w-0">
               <div className="truncate text-lg font-extrabold tracking-tight text-slate-900 font-display">
-                PULSE<span className="text-[#88C400] font-normal ml-0.5">•</span>
+                SWEATZONE<span className="text-[#88C400] font-normal ml-0.5">•</span>
               </div>
             </div>
           </Link>
@@ -184,7 +182,7 @@ export function Sidebar() {
         {/* Drawer Footer */}
         <div className="p-4 border-t border-slate-100 bg-slate-50/50">
           <div className="text-[11px] font-medium text-slate-400 text-center">
-            Pulse Gym Management v1.0
+            SWEATZONE Gym Management v1.0
           </div>
         </div>
       </div>

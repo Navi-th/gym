@@ -4,6 +4,15 @@ import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  async redirects() {
+    return [
+      {
+        source: "/admin/subscriptions",
+        destination: "/admin/members",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

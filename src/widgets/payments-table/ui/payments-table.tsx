@@ -15,13 +15,6 @@ import {
 import { PAYMENT_METHOD_LABELS, type PaymentWithMember } from "@/entities/payment";
 import { formatDate, formatMoney, initials } from "@/shared/lib";
 
-/**
- * Payment history.
- *
- * Read-only on purpose. A recorded payment is an audit entry — if a figure is
- * wrong, the correction is another entry, not an edit. Nothing here is
- * clickable because nothing here should be changed.
- */
 export function PaymentsTable({ payments }: { payments: PaymentWithMember[] }) {
   return (
     <Card>
@@ -68,9 +61,6 @@ export function PaymentsTable({ payments }: { payments: PaymentWithMember[] }) {
                   </TD>
                   <TD className="text-zinc-700 font-medium">
                     {PAYMENT_METHOD_LABELS[payment.method] ?? payment.method}
-                    {payment.reference && (
-                      <div className="text-[11px] font-semibold text-zinc-500">{payment.reference}</div>
-                    )}
                   </TD>
                   <TD className="whitespace-nowrap text-xs text-zinc-600 font-medium">
                     {payment.periodStart || payment.periodEnd
