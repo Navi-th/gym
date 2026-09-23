@@ -1,10 +1,6 @@
-import { getMemberById } from "@/entities/member";
 import {
   getPayments,
   getRevenueTotals,
-  recordPayment,
-  validatePaymentInput,
-  type PaymentInput,
 } from "@/entities/payment";
 import { todayUtc } from "@/shared/lib";
 
@@ -32,28 +28,3 @@ export async function listPaymentsHandler(request: Request) {
   });
 }
 
-/**
- * POST /admin/api/payments
- */
-export async function recordPaymentHandler(request: Request) {
-  let body: Partial<PaymentInput>;
-  try {
-    body = (await request.json()) as Partial<PaymentInput>;
-  } catch {
-    return Response.json({ ok: false, error: "Invalid JSON body." }, { status: 400 });
-  }
-
-  const member = body.memberId ? await getMemberById(body.memberId) : null;
-  if (!member) {
-    return Response.json({ ok: false, error: "Member not found." }, { status: 404 });
-  }
-
-  const result = validatePaymentInput(body);
-  if (!result.ok) {
-    return Response.json({ ok: false, errors: result.errors }, { status: 422 });
-  }
-
-  const payment = await recordPayment(result.value);
-
-  return Response.json({ ok: true, payment }, { status: 201 });
-}

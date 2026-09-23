@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
+  Button,
   Card,
   CardContent,
   CardDescription,
@@ -17,7 +19,6 @@ import {
   TableMessage,
 } from "@/shared/ui";
 import { daysOverdue } from "@/entities/payment";
-import { PaymentForm } from "@/features/record-payment";
 import { formatDate, formatMoneyCompact, initials } from "@/shared/lib";
 
 export type DueRow = {
@@ -62,7 +63,7 @@ export function DuesTable({
                 <TH>Plan</TH>
                 <TH>Lapsed</TH>
                 <TH>Owed</TH>
-                <TH className="text-right">Record payment</TH>
+                <TH className="text-right">Action</TH>
               </TR>
             </THead>
             <TBody>
@@ -102,10 +103,11 @@ export function DuesTable({
                       </TD>
                       <TD className="text-right">
                         <div className="flex justify-end">
-                          <PaymentForm
-                            memberId={row.memberId}
-                            suggestedAmountCents={row.planPriceCents}
-                          />
+                          <Link href={`/admin/members/${row.memberId}`}>
+                            <Button size="sm" variant="secondary">
+                              Renew
+                            </Button>
+                          </Link>
                         </div>
                       </TD>
                     </TR>
