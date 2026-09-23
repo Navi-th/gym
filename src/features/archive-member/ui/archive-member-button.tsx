@@ -4,13 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/shared/ui";
 
-/**
- * Archives (soft-deletes) a member.
- *
- * Confirms first, because archiving is the kind of click people regret. The
- * wording deliberately says what is NOT lost — staff hesitate otherwise, and a
- * hesitant front desk keeps dead records instead.
- */
 export function ArchiveMemberButton({
   memberId,
   memberName,
@@ -24,7 +17,7 @@ export function ArchiveMemberButton({
 
   async function handleArchive() {
     const confirmed = window.confirm(
-      `Archive ${memberName}?\n\nTheir payment and subscription history is kept, and their phone number is freed up for reuse.`
+      `Delete ${memberName}?\n\nTheir payment history will be preserved in records, and their phone number will be freed for reuse.`
     );
     if (!confirmed) return;
 
@@ -50,7 +43,7 @@ export function ArchiveMemberButton({
   return (
     <div className="flex items-center gap-3">
       <Button variant="danger" onClick={handleArchive} disabled={busy}>
-        {busy ? "Archiving…" : "Archive member"}
+        {busy ? "Deleting…" : "Delete member"}
       </Button>
       {error && <span className="text-xs font-semibold text-rose-600">{error}</span>}
     </div>

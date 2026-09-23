@@ -30,40 +30,23 @@ export async function MemberFormPage({ memberId }: { memberId?: string }) {
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
-      <header className="space-y-3">
-        <BackButton href="/admin/members" label="Members" />
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-display">
-            {member ? member.fullName : "Add member"}
-          </h1>
-          <p className="mt-1 text-xs sm:text-sm text-slate-500 font-medium">
-            {member ? `Member code ${member.memberCode}` : "Details can be edited later."}
-          </p>
+      <header className="flex flex-wrap items-center justify-between gap-4">
+        <div className="space-y-3">
+          <BackButton href="/admin/members" label="Members" />
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-display">
+              {member ? member.fullName : "Add member"}
+            </h1>
+            <p className="mt-1 text-xs sm:text-sm text-slate-500 font-medium">
+              {member ? `Member code ${member.memberCode}` : "Details can be edited later."}
+            </p>
+          </div>
         </div>
-      </header>
 
-      {member && (
-        <Card>
-          <CardContent className="flex flex-wrap items-center justify-between gap-4 p-4">
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs">
-              <span className="text-zinc-500 font-medium">
-                Phone{" "}
-                <span className="ml-1.5 font-bold text-zinc-900">
-                  {formatPhone(member.phone)}
-                </span>
-              </span>
-              <span className="text-zinc-500 font-medium">
-                Expiry{" "}
-                <span className="ml-1.5 font-bold text-zinc-900">
-                  {formatDate(member.planEnd)}
-                </span>
-              </span>
-              <MemberStatusBadge status={member.status} />
-            </div>
-            <ArchiveMemberButton memberId={member.id} memberName={member.fullName} />
-          </CardContent>
-        </Card>
-      )}
+        {member && (
+          <ArchiveMemberButton memberId={member.id} memberName={member.fullName} />
+        )}
+      </header>
 
       {member && (
         <Card>
