@@ -8,6 +8,13 @@
       "when": 1789977570198,
       "tag": "0000_nebulous_firebird",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1790140160620,
+      "tag": "0001_nasty_gamora",
+      "breakpoints": true
     }
   ]
 }

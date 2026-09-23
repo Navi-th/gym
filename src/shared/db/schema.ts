@@ -78,41 +78,6 @@ export const members = sqliteTable(
 // ---------------------------------------------------------------------------
 // Subscriptions — the member <-> plan join over time
 // ---------------------------------------------------------------------------
-export const subscriptions = sqliteTable(
-  "subscriptions",
-  {
-    id: text("id").primaryKey(),
-    memberId: text("member_id")
-      .notNull()
-      .references(() => members.id),
-    planId: text("plan_id")
-      .notNull()
-      .references(() => plans.id),
-    startDate: text("start_date").notNull(),
-    endDate: text("end_date").notNull(),
-    status: text("status", { enum: ["active", "expired", "frozen", "cancelled"] })
-      .notNull()
-      .default("active"),
-
-    // SNAPSHOT of the plan price at signup. Plans change over time; historical
-    // revenue must never silently re-price itself by joining the live plan row.
-    priceCentsCharged: integer("price_cents_charged").notNull(),
-
-    freezeDays: integer("freeze_days").notNull().default(0),
-    createdAt: text("created_at")
-      .notNull()
-      .default(sql`(datetime('now'))`),
-    updatedAt: text("updated_at")
-      .notNull()
-      .default(sql`(datetime('now'))`),
-  },
-  (t) => [
-    index("idx_subs_member").on(t.memberId),
-    index("idx_subs_end").on(t.endDate),
-  ]
-);
-
-// ---------------------------------------------------------------------------
 // Payments
 // ---------------------------------------------------------------------------
 export const payments = sqliteTable(
@@ -122,14 +87,11 @@ export const payments = sqliteTable(
     memberId: text("member_id")
       .notNull()
       .references(() => members.id),
-    subscriptionId: text("subscription_id").references(() => subscriptions.id),
     amountCents: integer("amount_cents").notNull(),
     method: text("method", { enum: ["cash", "upi", "card", "bank"] }).notNull(),
     paidAt: text("paid_at").notNull(),
     periodStart: text("period_start"),
     periodEnd: text("period_end"),
-    reference: text("reference"),
-    note: text("note"),
     createdAt: text("created_at")
       .notNull()
       .default(sql`(datetime('now'))`),
@@ -186,12 +148,6 @@ export const automationRules = sqliteTable("automation_rules", {
 // double-sending STRUCTURALLY IMPOSSIBLE rather than a code convention. A
 // retried cron that re-messages every member is how a gym loses its customer
 // base in one afternoon.
-//
-// It is a plain column rather than a unique index over IFNULL(...) expressions
-// for two reasons: SQLite treats NULLs as distinct in unique indexes (so the
-// naive index would not actually prevent duplicates), and drizzle-kit cannot
-// serialise expression indexes for SQLite. A computed idempotency key is
-// simpler, greppable, and tool-friendly.
 // ---------------------------------------------------------------------------
 export const messages = sqliteTable(
   "messages",
@@ -200,12 +156,10 @@ export const messages = sqliteTable(
     memberId: text("member_id")
       .notNull()
       .references(() => members.id),
-    subscriptionId: text("subscription_id").references(() => subscriptions.id),
     ruleId: text("rule_id").references(() => automationRules.id),
     templateKey: text("template_key").notNull(),
 
-    // Idempotency key: "<memberId>:<subscriptionId|->:<ruleId|->:<templateKey>"
-    // Built by buildDedupeKey() — see src/lib/messaging/dedupe.ts
+    // Idempotency key: "<memberId>:<ruleId|->:<templateKey>"
     dedupeKey: text("dedupe_key").notNull().unique(),
 
     toPhone: text("to_phone").notNull(),
