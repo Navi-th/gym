@@ -58,6 +58,22 @@ export function daysUntilExpiry(planEnd: string, today: Date = new Date()): numb
   return daysBetween(today.toISOString().slice(0, 10), planEnd);
 }
 
+export function computeRenewalDates(input: {
+  currentEnd?: string | null;
+  status: MemberStatus;
+  durationDays: number;
+  today: string;
+}): { startDate: string; endDate: string } {
+  const startDate =
+    input.status === "expiring_soon" && input.currentEnd && input.currentEnd >= input.today
+      ? input.currentEnd
+      : input.today;
+
+  const endDate = addDays(startDate, Math.max(0, input.durationDays - 1));
+
+  return { startDate, endDate };
+}
+
 /** Display label + Tailwind tone classes, used by <MemberStatusBadge />. */
 export const STATUS_META: Record<MemberStatus, { label: string; className: string }> = {
   active: {

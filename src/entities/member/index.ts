@@ -18,6 +18,8 @@ export { getMemberById } from "./api/get-member-by-id";
 export { createMember } from "./api/create-member";
 export { updateMember } from "./api/update-member";
 export { archiveMember } from "./api/archive-member";
+export { assignPlanToMember } from "./api/assign-plan";
+export { renewMemberPlan } from "./api/renew-plan";
 
 // --- model -----------------------------------------------------------------
 export {
