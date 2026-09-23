@@ -11,32 +11,17 @@ import {
 import { centsToPriceInput, parsePriceToCents } from "@/entities/plan";
 import { submitPayment } from "../api/submit-payment";
 
-/**
- * Records a payment, optionally renewing cover at the same time.
- *
- * The amount is prefilled from the plan the member is actually on, because
- * that is what they owe nine times out of ten — and it removes the chance of
- * typing a price that stopped being correct months ago.
- *
- * The price is kept as a string until submit; see parsePriceToCents for why.
- */
 export function PaymentForm({
   memberId,
-  subscriptionId,
   suggestedAmountCents,
-  suggestedDurationDays,
 }: {
   memberId: string;
-  subscriptionId: string | null;
   suggestedAmountCents: number;
-  suggestedDurationDays?: number;
 }) {
   const router = useRouter();
 
   const [amount, setAmount] = useState(centsToPriceInput(suggestedAmountCents));
   const [method, setMethod] = useState<PaymentMethod>("cash");
-  const [reference, setReference] = useState("");
-  const [renew, setRenew] = useState(Boolean(subscriptionId));
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -53,11 +38,8 @@ export function PaymentForm({
     setSaving(true);
     const result = await submitPayment({
       memberId,
-      subscriptionId,
       amountCents,
       method,
-      reference: reference.trim() === "" ? null : reference,
-      renew: renew && Boolean(subscriptionId),
     });
 
     if (!result.ok) {
@@ -68,7 +50,6 @@ export function PaymentForm({
     }
 
     setSaving(false);
-    setReference("");
     router.refresh();
   }
 
@@ -94,26 +75,6 @@ export function PaymentForm({
           </option>
         ))}
       </Select>
-
-      <Input
-        value={reference}
-        onChange={(e) => setReference(e.target.value)}
-        className="h-8 w-32 px-2 py-0 text-xs"
-        placeholder="Ref (optional)"
-        aria-label="Payment reference"
-      />
-
-      {subscriptionId && (
-        <label className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-600">
-          <input
-            type="checkbox"
-            checked={renew}
-            onChange={(e) => setRenew(e.target.checked)}
-            className="h-3.5 w-3.5 accent-black rounded"
-          />
-          {suggestedDurationDays ? `Renew ${suggestedDurationDays} days` : "Renew"}
-        </label>
-      )}
 
       <Button type="submit" size="sm" loading={saving}>
         {saving ? "Saving…" : "Record"}

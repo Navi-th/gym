@@ -13,14 +13,11 @@ export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
 
 export type PaymentInput = {
   memberId: string;
-  subscriptionId: string | null;
   amountCents: number;
   method: PaymentMethod;
   paidAt: string;
   periodStart: string | null;
   periodEnd: string | null;
-  reference: string | null;
-  note: string | null;
 };
 
 export type PaymentValidationResult =
@@ -35,14 +32,6 @@ function clean(value: unknown): string | null {
   return trimmed === "" ? null : trimmed;
 }
 
-/**
- * Validates a recorded payment.
- *
- * Note there is no upper bound tied to the member's plan price: gyms take part
- * payments, advance payments and settle old arrears, and refusing those would
- * force staff back to paper. The sanity bound is only there to catch a
- * misplaced decimal point.
- */
 export function validatePaymentInput(
   raw: Partial<PaymentInput> & { amountCents?: number }
 ): PaymentValidationResult {
@@ -93,14 +82,11 @@ export function validatePaymentInput(
     ok: true,
     value: {
       memberId: memberId as string,
-      subscriptionId: clean(raw.subscriptionId),
       amountCents: amountCents as number,
       method: method as PaymentMethod,
       paidAt,
       periodStart,
       periodEnd,
-      reference: clean(raw.reference),
-      note: clean(raw.note),
     },
   };
 }

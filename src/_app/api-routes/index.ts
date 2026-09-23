@@ -15,10 +15,7 @@ export {
   updateMemberHandler,
 } from "./member-by-id";
 export { assignPlanHandler } from "./subscriptions";
-export {
-  getSubscriptionHandler,
-  updateSubscriptionHandler,
-} from "./subscription-by-id";
+export { updateSubscriptionHandler } from "./subscription-by-id";
 export { createPlanHandler, listPlansHandler } from "./plans";
 export { getPlanHandler, updatePlanHandler } from "./plan-by-id";
 export { listPaymentsHandler, recordPaymentHandler } from "./payments";
