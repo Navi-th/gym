@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-23  
 **Status:** Approved by User  
-**Goal:** Simplify the database and member management by removing the `subscriptions` table, storing active plan details directly on the `members` table, tracking purchase history via `payments`, and hiding the renewal action in `/admin/members` until a member's plan is expiring soon or expired.
+**Goal:** Simplify the database and member management by removing the `subscriptions` table, storing active plan details directly on the `members` table, tracking purchase history via `payments`, integrating payment method selection directly into the renewal action, and hiding the renewal action in `/admin/members` until a member's plan is expiring soon or expired.
 
 ---
 
@@ -13,6 +13,8 @@ Currently, the application maintains two parallel tables for tracking plans:
 2. `subscriptions` — duplicates plan assignments and renewal periods over time.
 
 Additionally, `payments` records cash/UPI transactions for memberships. The `subscriptions` table introduces unnecessary schema complexity and query joins. Removing `subscriptions` simplifies the architecture while retaining full payment history in `payments`.
+
+To prevent duplicate payment entries on member pages, standalone payment forms are removed from the member details view, and payment method selection (Cash/UPI/Card/Bank) is integrated directly into the Renew & Change Plan actions.
 
 ---
 
@@ -53,16 +55,17 @@ Additionally, `payments` records cash/UPI transactions for memberships. The `sub
 - **`expiring_soon`**: `planEnd` is within 7 days of `today` (`today <= planEnd <= today + 7 days`).
 - **`active`**: `planEnd` > `today + 7 days`.
 
-### Renewal & Plan Switching
+### Renewal & Plan Switching (Single Atomic Action)
 1. **Renew Same Plan**:
+   - Admin selects Payment Method (`Cash`, `UPI`, `Card`, `Bank`).
    - If `status === 'expiring_soon'`: `newStart = current planEnd`, `newEnd = current planEnd + plan.durationDays` (preserves remaining days).
    - If `status === 'expired'`: `newStart = today`, `newEnd = today + plan.durationDays`.
 2. **Change Plan**:
-   - Admin selects a new plan from a dropdown.
+   - Admin selects a new plan from a dropdown and selects Payment Method.
    - `members.planId` is updated to the new plan ID.
    - `planStart` and `planEnd` are recalculated based on the new plan's duration.
-3. **Automatic Payment Record**:
-   - Every plan renewal or plan change logs a row in `payments` with `memberId`, `amountCents`, `method`, `paidAt`, `periodStart`, and `periodEnd`.
+3. **Automatic Single Payment Record**:
+   - Every plan renewal or plan change logs **exactly one** row in `payments` with `memberId`, `amountCents`, `method`, `paidAt`, `periodStart`, and `periodEnd`.
 
 ---
 
@@ -74,16 +77,18 @@ Additionally, `payments` records cash/UPI transactions for memberships. The `sub
 - **Renewal Button & Plan Switcher Visibility**:
   - **Hidden when status is `active`** (more than 7 days remaining). Displays a muted info label: *"Plan active. Renew button becomes available when expiring soon."*
   - **Visible when status is `expiring_soon` or `expired`**:
-    - **[ Renew Plan ]** button: Extends the current plan duration.
-    - **[ Change Plan ]** dropdown + button: Assigns a different plan.
-- **If No Plan Assigned**:
-  - Displays **Assign Plan** form.
+    - Payment Method dropdown (`Cash`, `UPI`, `Card`, `Bank`).
+    - **[ Renew Plan ]** button: Extends current plan duration and logs payment method.
+    - **[ Change Plan ]** dropdown + button: Assigns a different plan and logs payment method.
+- **Removed Standalone Payment Card**:
+  - Standalone "Record Payment" form removed from `/admin/members/[id]` to eliminate duplicate payment logs.
 
 ---
 
 ## 5. Migration & Cleanup Plan
 
 1. Drop `subscriptions` entity from `src/entities/subscription/`.
-2. Move plan assignment and renewal methods to `src/entities/member/` or `src/features/manage-plan/`.
-3. Update server actions and routes referencing subscriptions (`/admin/members`, `/admin/payments`).
-4. Generate new Drizzle SQL migration script reflecting schema changes.
+2. Update `renewMemberPlan` in `src/entities/member/` to accept `paymentMethod`.
+3. Update `MemberPlanActions` in `src/features/manage-subscription/` to include payment method selector.
+4. Remove standalone `PaymentForm` from `MemberFormPage`.
+5. Clear `.next` build cache (`npm run dev:clean`).
