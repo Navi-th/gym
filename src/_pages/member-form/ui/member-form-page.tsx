@@ -13,7 +13,6 @@ import { getPlans, planNameById } from "@/entities/plan";
 import { ArchiveMemberButton } from "@/features/archive-member";
 import { AssignPlanForm } from "@/features/assign-plan";
 import { MemberPlanActions } from "@/features/manage-subscription";
-import { PaymentForm } from "@/features/record-payment";
 import { MemberForm } from "@/features/save-member";
 import { formatDate, formatMoneyCompact } from "@/shared/lib";
 
@@ -110,21 +109,6 @@ export async function MemberFormPage({ memberId }: { memberId?: string }) {
             ) : (
               <AssignPlanForm memberId={member.id} plans={plans} />
             )}
-          </CardContent>
-        </Card>
-      )}
-
-      {member && currentPlan && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Record payment</CardTitle>
-            <CardDescription>Log cash or UPI payment transaction for this member.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <PaymentForm
-              memberId={member.id}
-              suggestedAmountCents={currentPlan.priceCents}
-            />
           </CardContent>
         </Card>
       )}

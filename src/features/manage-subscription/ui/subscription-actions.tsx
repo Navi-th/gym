@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/shared/ui";
 import { MemberStatus } from "@/entities/member";
+import { PAYMENT_METHOD_LABELS, PAYMENT_METHODS, PaymentMethod } from "@/entities/payment";
 import { Plan } from "@/entities/plan";
 import { submitPlanAction } from "../api/submit-action";
 
@@ -21,6 +22,7 @@ export function MemberPlanActions({
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [selectedPlanId, setSelectedPlanId] = useState<string>(currentPlanId ?? plans[0]?.id ?? "");
   const [showChangePlan, setShowChangePlan] = useState(false);
 
@@ -36,7 +38,7 @@ export function MemberPlanActions({
   async function handleRenew() {
     setBusy("renew");
     setError(null);
-    const res = await submitPlanAction({ action: "renew", memberId });
+    const res = await submitPlanAction({ action: "renew", memberId, paymentMethod });
     setBusy(null);
     if (!res.ok) {
       setError(res.message ?? "Failed to renew plan");
@@ -48,7 +50,12 @@ export function MemberPlanActions({
   async function handleChangePlan() {
     setBusy("change");
     setError(null);
-    const res = await submitPlanAction({ action: "change_plan", memberId, newPlanId: selectedPlanId });
+    const res = await submitPlanAction({
+      action: "change_plan",
+      memberId,
+      newPlanId: selectedPlanId,
+      paymentMethod,
+    });
     setBusy(null);
     if (!res.ok) {
       setError(res.message ?? "Failed to change plan");
@@ -60,6 +67,19 @@ export function MemberPlanActions({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
+      <select
+        value={paymentMethod}
+        onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
+        className="h-8 rounded-md border border-zinc-300 bg-white px-2 py-0 text-xs font-medium text-zinc-900"
+        aria-label="Payment Method"
+      >
+        {PAYMENT_METHODS.map((m) => (
+          <option key={m} value={m}>
+            {PAYMENT_METHOD_LABELS[m]}
+          </option>
+        ))}
+      </select>
+
       <Button size="sm" onClick={handleRenew} disabled={busy !== null}>
         {busy === "renew" ? "Renewing…" : "Renew Plan"}
       </Button>
