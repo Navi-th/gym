@@ -4,7 +4,7 @@ import { getPlanById } from "@/entities/plan";
 type RouteContext = { params: { id: string } };
 
 export async function updateSubscriptionHandler(request: Request, context: RouteContext) {
-  let body: { action?: string; newPlanId?: string };
+  let body: { action?: string; newPlanId?: string; paymentMethod?: string };
   try {
     body = await request.json();
   } catch {
@@ -26,6 +26,10 @@ export async function updateSubscriptionHandler(request: Request, context: Route
     return Response.json({ ok: false, error: "Plan no longer exists." }, { status: 422 });
   }
 
+  const paymentMethod = (body.paymentMethod === "upi" || body.paymentMethod === "card" || body.paymentMethod === "bank")
+    ? body.paymentMethod
+    : "cash";
+
   if (body.action === "renew" || body.action === "change_plan") {
     await renewMemberPlan({
       memberId: member.id,
@@ -34,6 +38,7 @@ export async function updateSubscriptionHandler(request: Request, context: Route
       priceCents: plan.priceCents,
       currentEnd: member.planEnd,
       stage: member.stage,
+      paymentMethod,
     });
     return Response.json({ ok: true });
   }

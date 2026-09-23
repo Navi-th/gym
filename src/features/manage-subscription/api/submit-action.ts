@@ -1,6 +1,6 @@
 export type PlanActionInput =
-  | { action: "renew"; memberId: string }
-  | { action: "change_plan"; memberId: string; newPlanId: string };
+  | { action: "renew"; memberId: string; paymentMethod?: "cash" | "upi" | "card" | "bank" }
+  | { action: "change_plan"; memberId: string; newPlanId: string; paymentMethod?: "cash" | "upi" | "card" | "bank" };
 
 export type ActionResult =
   | { ok: true }
