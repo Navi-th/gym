@@ -2,18 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BackButton, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui";
 import { getPlanById } from "@/entities/plan";
-import { countSubscriptionsForPlan } from "@/entities/subscription";
 import { PlanForm } from "@/features/save-plan";
 
 /** Create or edit a single plan. */
 export async function PlanFormPage({ planId }: { planId?: string }) {
   const plan = planId ? await getPlanById(planId) : null;
   if (planId && !plan) notFound();
-
-  // Counted here so the form can warn before an edit, rather than reporting
-  // afterwards how many members it might have affected. The handler orchestrates
-  // this join because the plan and subscription entities may not import each other.
-  const activeSubscriptions = plan ? await countSubscriptionsForPlan(plan.id) : 0;
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">
@@ -42,7 +36,7 @@ export async function PlanFormPage({ planId }: { planId?: string }) {
           <PlanForm
             mode={plan ? "edit" : "create"}
             plan={plan ?? undefined}
-            activeSubscriptions={activeSubscriptions}
+            activeSubscriptions={0}
           />
         </CardContent>
       </Card>

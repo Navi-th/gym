@@ -27,7 +27,6 @@ export type NudgeMemberRow = {
   planEnd: string | null;
   daysLeft: number | null;
   whatsappOptIn: boolean;
-  subscriptionId: string | null;
 };
 
 export function NudgeQueueTable({
@@ -111,7 +110,6 @@ export function NudgeQueueTable({
                       <div className="flex justify-end">
                         <SendReminderButton
                           memberId={member.id}
-                          subscriptionId={member.subscriptionId}
                           templates={templates}
                         />
                       </div>

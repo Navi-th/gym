@@ -2,83 +2,91 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Input } from "@/shared/ui";
-import { submitSubscriptionAction } from "../api/submit-action";
+import { Button } from "@/shared/ui";
+import { MemberStatus } from "@/entities/member";
+import { Plan } from "@/entities/plan";
+import { submitPlanAction } from "../api/submit-action";
 
-/**
- * Renew and freeze for one subscription.
- *
- * One component for both because they are the same operation from the
- * database's point of view — push the end date out — and differ only in
- * intent. Splitting them into separate features would duplicate the request
- * plumbing and the error handling for no gain.
- *
- * Freezing asks for a duration because it is not a fixed length; renewing does
- * not, because the plan already knows its own length.
- */
-export function SubscriptionActions({ subscriptionId }: { subscriptionId: string }) {
+export function MemberPlanActions({
+  memberId,
+  currentPlanId,
+  status,
+  plans,
+}: {
+  memberId: string;
+  currentPlanId?: string | null;
+  status: MemberStatus;
+  plans: Plan[];
+}) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showFreeze, setShowFreeze] = useState(false);
-  const [freezeDays, setFreezeDays] = useState("7");
+  const [selectedPlanId, setSelectedPlanId] = useState<string>(currentPlanId ?? plans[0]?.id ?? "");
+  const [showChangePlan, setShowChangePlan] = useState(false);
 
-  async function run(label: string, input: Parameters<typeof submitSubscriptionAction>[1]) {
-    setBusy(label);
-    setError(null);
-
-    const result = await submitSubscriptionAction(subscriptionId, input);
-
-    if (!result.ok) {
-      setBusy(null);
-      const fieldError = result.errors ? Object.values(result.errors)[0] : undefined;
-      setError(fieldError ?? result.message ?? "Something went wrong.");
-      return;
-    }
-
-    setBusy(null);
-    setShowFreeze(false);
-    router.refresh();
+  // When status is active, hide renew/change buttons
+  if (status === "active") {
+    return (
+      <div className="text-xs text-zinc-500 font-medium italic">
+        Plan is active. Renewal button becomes available when expiring soon.
+      </div>
+    );
   }
 
-  const days = Number(freezeDays);
-  const daysValid = Number.isInteger(days) && days > 0;
+  async function handleRenew() {
+    setBusy("renew");
+    setError(null);
+    const res = await submitPlanAction({ action: "renew", memberId });
+    setBusy(null);
+    if (!res.ok) {
+      setError(res.message ?? "Failed to renew plan");
+    } else {
+      router.refresh();
+    }
+  }
+
+  async function handleChangePlan() {
+    setBusy("change");
+    setError(null);
+    const res = await submitPlanAction({ action: "change_plan", memberId, newPlanId: selectedPlanId });
+    setBusy(null);
+    if (!res.ok) {
+      setError(res.message ?? "Failed to change plan");
+    } else {
+      setShowChangePlan(false);
+      router.refresh();
+    }
+  }
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Button
-        size="sm"
-        onClick={() => run("renew", { action: "renew" })}
-        disabled={busy !== null}
-      >
-        {busy === "renew" ? "Renewing…" : "Renew"}
+      <Button size="sm" onClick={handleRenew} disabled={busy !== null}>
+        {busy === "renew" ? "Renewing…" : "Renew Plan"}
       </Button>
 
-      {showFreeze ? (
-        <>
-          <Input
-            type="number"
-            min={1}
-            value={freezeDays}
-            onChange={(e) => setFreezeDays(e.target.value)}
-            className="h-8 w-20 px-2 py-0 text-xs"
-            aria-label="Days to freeze"
-          />
-          <Button
-            size="sm"
-            variant="secondary"
-            onClick={() => run("freeze", { action: "freeze", freezeDays: days })}
-            disabled={busy !== null || !daysValid}
+      {showChangePlan ? (
+        <div className="flex items-center gap-2">
+          <select
+            value={selectedPlanId}
+            onChange={(e) => setSelectedPlanId(e.target.value)}
+            className="h-8 rounded-md border border-zinc-300 bg-white px-2 py-0 text-xs font-medium text-zinc-900"
           >
-            {busy === "freeze" ? "Freezing…" : "Confirm freeze"}
+            {plans.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name} (₹{p.priceCents / 100})
+              </option>
+            ))}
+          </select>
+          <Button size="sm" variant="secondary" onClick={handleChangePlan} disabled={busy !== null}>
+            {busy === "change" ? "Updating…" : "Confirm Change"}
           </Button>
-          <Button size="sm" variant="ghost" onClick={() => setShowFreeze(false)}>
+          <Button size="sm" variant="ghost" onClick={() => setShowChangePlan(false)}>
             Cancel
           </Button>
-        </>
+        </div>
       ) : (
-        <Button size="sm" variant="secondary" onClick={() => setShowFreeze(true)}>
-          Freeze
+        <Button size="sm" variant="secondary" onClick={() => setShowChangePlan(true)}>
+          Change Plan
         </Button>
       )}
 
@@ -86,3 +94,5 @@ export function SubscriptionActions({ subscriptionId }: { subscriptionId: string
     </div>
   );
 }
+
+export { MemberPlanActions as SubscriptionActions };

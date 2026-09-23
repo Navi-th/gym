@@ -6,26 +6,11 @@ import { Button, Select } from "@/shared/ui";
 import type { MessageTemplate } from "@/entities/message";
 import { submitReminder } from "../api/submit-reminder";
 
-/**
- * Sends a templated reminder over WhatsApp.
- *
- * V1 opens a `wa.me` link for a human to press send rather than calling the
- * WhatsApp API. That means one person sees every message before it goes, which
- * is the right place to be while the wording is still being tuned — and it
- * sidesteps Meta's template-approval queue entirely, which would otherwise
- * block this feature behind a multi-day review.
- *
- * The message is recorded in the ledger BEFORE the link is opened. If the
- * member closes the tab, the record still exists, and the dedupe key stops the
- * same reminder being queued twice for the same period.
- */
 export function SendReminderButton({
   memberId,
-  subscriptionId,
   templates,
 }: {
   memberId: string;
-  subscriptionId: string | null;
   templates: MessageTemplate[];
 }) {
   const router = useRouter();
@@ -38,7 +23,7 @@ export function SendReminderButton({
     setBusy(true);
     setError(null);
 
-    const result = await submitReminder({ memberId, templateKey, subscriptionId });
+    const result = await submitReminder({ memberId, templateKey });
 
     if (!result.ok) {
       setBusy(false);
@@ -47,8 +32,6 @@ export function SendReminderButton({
       return;
     }
 
-    // Opened after a successful log, so an unsent message is never recorded as
-    // sent and a sent one is never lost.
     window.open(result.link, "_blank", "noopener,noreferrer");
     setBusy(false);
     router.refresh();

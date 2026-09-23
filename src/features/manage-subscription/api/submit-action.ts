@@ -1,17 +1,13 @@
-export type ActionInput =
-  | { action: "renew" }
-  | { action: "freeze"; freezeDays: number };
+export type PlanActionInput =
+  | { action: "renew"; memberId: string }
+  | { action: "change_plan"; memberId: string; newPlanId: string };
 
 export type ActionResult =
   | { ok: true }
   | { ok: false; errors?: Record<string, string>; message?: string };
 
-/** Renews or freezes a subscription. Both simply push the end date out. */
-export async function submitSubscriptionAction(
-  subscriptionId: string,
-  input: ActionInput
-): Promise<ActionResult> {
-  const response = await fetch(`/admin/api/members/subscriptions/${subscriptionId}`, {
+export async function submitPlanAction(input: PlanActionInput): Promise<ActionResult> {
+  const response = await fetch(`/admin/api/members/subscriptions/${input.memberId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),

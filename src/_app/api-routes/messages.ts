@@ -127,7 +127,6 @@ export async function sendMessageHandler(request: Request) {
   try {
     const message = await logMessage({
       memberId: member.id,
-      subscriptionId: body.subscriptionId ?? null,
       templateKey: template.key,
       toPhone: member.phone,
       renderedBody: rendered,

@@ -9,30 +9,17 @@ import {
 } from "@/shared/ui";
 import { getAllMembers, selectRenewalsQueue } from "@/entities/member";
 import { getMessages, getMessageTemplates } from "@/entities/message";
-import { getAllSubscriptions } from "@/entities/subscription";
 import { MessagesTable } from "@/widgets/messages-table";
-import { todayUtc } from "@/shared/lib";
 import { NudgeQueueTable } from "./nudge-queue-table";
 
 async function RemindersContentSection() {
-  const today = todayUtc();
-
-  const [members, subscriptions, templates, messages] = await Promise.all([
+  const [members, templates, messages] = await Promise.all([
     getAllMembers(),
-    getAllSubscriptions(today),
     getMessageTemplates(),
     getMessages({ limit: 50 }),
   ]);
 
-  // O(1) Map lookup instead of O(N) array.find in loop
-  const subscriptionByMemberId = new Map(subscriptions.map((s) => [s.memberId, s]));
-
-  // The audience: anyone whose cover is ending soon or already over. Leads are
-  // deliberately excluded — they have not bought anything to be reminded about.
-  const queue = selectRenewalsQueue(members).map((member) => ({
-    ...member,
-    subscriptionId: subscriptionByMemberId.get(member.id)?.id ?? null,
-  }));
+  const queue = selectRenewalsQueue(members);
 
   return (
     <>
@@ -68,9 +55,6 @@ async function RemindersContentSection() {
   );
 }
 
-/**
- * Reminder workspace.
- */
 export function RemindersPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-5">

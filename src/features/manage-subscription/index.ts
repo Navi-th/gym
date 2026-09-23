@@ -1,6 +1,6 @@
-export { SubscriptionActions } from "./ui/subscription-actions";
+export { MemberPlanActions, SubscriptionActions } from "./ui/subscription-actions";
 export {
-  submitSubscriptionAction,
-  type ActionInput,
+  submitPlanAction,
+  type PlanActionInput,
   type ActionResult,
 } from "./api/submit-action";

@@ -3,7 +3,6 @@ import { Card, CardContent, Pagination, Skeleton, TableSkeleton } from "@/shared
 import { getAllMembers } from "@/entities/member";
 import { getPlans, planNameById } from "@/entities/plan";
 import { getPayments, getRevenueTotals, selectDues } from "@/entities/payment";
-import { getAllSubscriptions } from "@/entities/subscription";
 import { DuesTable, type DueRow } from "@/widgets/dues-table";
 import { PaymentsTable } from "@/widgets/payments-table";
 import { formatMoneyCompact, todayUtc } from "@/shared/lib";
@@ -18,23 +17,17 @@ async function PaymentsContentSection({
   const today = todayUtc();
   const pageSize = 10;
 
-  const [members, plans, subscriptions, paymentsResult, totals] = await Promise.all([
+  const [members, plans, paymentsResult, totals] = await Promise.all([
     getAllMembers(),
     getPlans(),
-    getAllSubscriptions(today),
     getPayments({ page, pageSize }),
     getRevenueTotals(today.slice(0, 7)),
   ]);
 
   const planNames = planNameById(plans);
   const planById = new Map(plans.map((p) => [p.id, p]));
-  // O(1) lookup Map instead of O(N) array.find inside loop
-  const subscriptionByMemberId = new Map(subscriptions.map((s) => [s.memberId, s]));
 
-  // Arrears come from the member projection; the subscription supplies the id
-  // needed to renew, and the plan supplies the price to suggest.
   const dues: DueRow[] = selectDues(members, today).map((member) => {
-    const subscription = subscriptionByMemberId.get(member.id) ?? null;
     const plan = member.planId ? planById.get(member.planId) : undefined;
 
     return {
@@ -43,9 +36,7 @@ async function PaymentsContentSection({
       memberCode: member.memberCode,
       planEnd: member.planEnd as string,
       planName: planNames.get(member.planId ?? "") ?? "—",
-      subscriptionId: subscription?.id ?? null,
-      planPriceCents: plan?.priceCents ?? subscription?.priceCentsCharged ?? 0,
-      planDurationDays: plan?.durationDays ?? 30,
+      planPriceCents: plan?.priceCents ?? 0,
     };
   });
 
@@ -86,9 +77,6 @@ async function PaymentsContentSection({
   );
 }
 
-/**
- * Money view: who owes, and what has come in.
- */
 export function PaymentsPage({
   searchParams = {},
 }: {
