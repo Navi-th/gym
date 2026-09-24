@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { eq } from "drizzle-orm";
 import { getDb, members as membersTable, payments as paymentsTable } from "@/shared/db";
 import { addDays, newId, todayUtc } from "@/shared/lib";
@@ -44,4 +45,9 @@ export async function assignPlanToMember(input: {
       createdAt: now,
     }),
   ]);
+
+  revalidateTag("dues-count");
+  revalidateTag("members");
+  revalidateTag("payments");
+  revalidateTag("revenue-totals");
 }

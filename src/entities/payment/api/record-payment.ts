@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { getDb, payments as paymentsTable } from "@/shared/db";
 import { newId } from "@/shared/lib";
 import type { Payment } from "../model/types";
@@ -19,6 +20,10 @@ export async function recordPayment(input: PaymentInput): Promise<Payment> {
       createdAt: new Date().toISOString(),
     })
     .returning();
+
+  revalidateTag("payments");
+  revalidateTag("revenue-totals");
+  revalidateTag("dues-count");
 
   return rows[0];
 }
