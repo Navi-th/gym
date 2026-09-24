@@ -1,6 +1,5 @@
 import { getMemberById } from "@/entities/member";
 import {
-  buildWhatsAppLink,
   DuplicateMessageError,
   getMessages,
   getMessageTemplateByKey,
@@ -14,6 +13,19 @@ import { getPlanById } from "@/entities/plan";
 import { formatDate, formatMoneyCompact } from "@/shared/lib";
 
 /** HTTP layer for outbound messages. */
+
+/**
+ * Outcomes a caller may report. Deliberately only these two: `sent` means the
+ * browser handed the message to WhatsApp, `skipped` means a human decided not to
+ * message this member. Every other status in the enum belongs to a provider
+ * webhook, or is not written at all yet.
+ */
+const COMMITTABLE_STATUSES = ["sent", "skipped"] as const;
+type CommittableStatus = (typeof COMMITTABLE_STATUSES)[number];
+
+function isCommittableStatus(value: unknown): value is CommittableStatus {
+  return COMMITTABLE_STATUSES.includes(value as CommittableStatus);
+}
 
 /** GET /admin/api/messages  — the ledger plus the available templates. */
 export async function listMessagesHandler(request: Request) {
@@ -35,21 +47,32 @@ export async function listMessagesHandler(request: Request) {
 }
 
 /**
- * POST /admin/api/messages
+ * POST /admin/api/messages — records the OUTCOME of a reminder.
  *
- * Body: { memberId, templateKey, subscriptionId? }
+ * Body: { memberId, templateKey, status, ruleId?, period? }
  *
- * Renders the template against the member's real data, records it in the
- * ledger, and returns a `wa.me` link for a human to open. It does NOT call the
- * WhatsApp API — see entities/message/model/whatsapp.ts for why v1 works this
- * way.
+ * This is the commit step, not a send. The Reminders page renders the body and
+ * builds the `wa.me` link during page render; the client opens that link and
+ * then reports what happened here. Writing only on a reported outcome is what
+ * stops the ledger claiming messages that were never handed to WhatsApp — which
+ * is exactly what this handler used to do by writing "sent" up front.
  *
- * Rendering happens on the SERVER so that the exact text recorded in
- * `rendered_body` is the exact text the link will send. Rendering in the
- * browser would make those two things able to drift.
+ * It does NOT call the WhatsApp API — see entities/message/model/whatsapp.ts.
+ *
+ * `period` is the membership end date the message is ABOUT, and it is what makes
+ * the dedupe key repeatable across terms. It defaults to the member's `planEnd`.
+ *
+ * The body is rendered here rather than accepted from the client, so
+ * `rendered_body` stays server-owned and a caller cannot forge what was sent.
  */
 export async function sendMessageHandler(request: Request) {
-  let body: { memberId?: string; templateKey?: string; subscriptionId?: string };
+  let body: {
+    memberId?: string;
+    templateKey?: string;
+    status?: string;
+    ruleId?: string | null;
+    period?: string | null;
+  };
   try {
     body = await request.json();
   } catch {
@@ -62,6 +85,18 @@ export async function sendMessageHandler(request: Request) {
   if (!body.templateKey) {
     return Response.json({ ok: false, errors: { templateKey: "A template is required." } }, { status: 422 });
   }
+  if (!isCommittableStatus(body.status)) {
+    return Response.json(
+      {
+        ok: false,
+        errors: {
+          status: `An outcome is required: one of ${COMMITTABLE_STATUSES.join(", ")}.`,
+        },
+      },
+      { status: 422 }
+    );
+  }
+  const status = body.status;
 
   const member = await getMemberById(body.memberId);
   if (!member) {
@@ -76,67 +111,77 @@ export async function sendMessageHandler(request: Request) {
     );
   }
 
-  if (!member.whatsappOptIn) {
-    // Meta requires documented consent, and sending without it risks the number
-    // being reported and quality-rated. Refused here rather than trusted to the
-    // UI, because this is the last point before something leaves the building.
-    return Response.json(
-      {
-        ok: false,
-        errors: {
-          whatsappOptIn: `${member.fullName} has not given WhatsApp consent. Record it on their profile first.`,
+  const period = body.period ?? member.planEnd;
+
+  // A skip is a decision NOT to message, so there is nothing to render and the
+  // consent rule does not apply. Recording it is the point: previously a member
+  // who was deliberately passed over left no trace in the ledger at all.
+  let renderedBody: string | null = null;
+
+  if (status === "sent") {
+    if (!member.whatsappOptIn) {
+      // Meta requires documented consent, and sending without it risks the number
+      // being reported and quality-rated. Refused here rather than trusted to the
+      // UI, because this is the last point before something leaves the building.
+      return Response.json(
+        {
+          ok: false,
+          errors: {
+            whatsappOptIn: `${member.fullName} has not given WhatsApp consent. Record it on their profile first.`,
+          },
         },
-      },
-      { status: 422 }
-    );
-  }
+        { status: 422 }
+      );
+    }
 
-  // The plan is fetched purely to fill {{plan}} and {{amount}}.
-  const plan = member.planId ? await getPlanById(member.planId) : null;
+    // The plan is fetched purely to fill {{plan}} and {{amount}}.
+    const plan = member.planId ? await getPlanById(member.planId) : null;
 
-  const values: Record<string, string> = {
-    // First name only: "Hi Aarav" reads like a person wrote it.
-    name: member.fullName.trim().split(/\s+/)[0] ?? member.fullName,
-    plan: plan?.name ?? "",
-    date: formatDate(member.planEnd),
-    code: member.memberCode,
-    amount: plan ? formatMoneyCompact(plan.priceCents) : "",
-  };
+    const values: Record<string, string> = {
+      // First name only: "Hi Aarav" reads like a person wrote it.
+      name: member.fullName.trim().split(/\s+/)[0] ?? member.fullName,
+      plan: plan?.name ?? "",
+      date: formatDate(member.planEnd),
+      code: member.memberCode,
+      amount: plan ? formatMoneyCompact(plan.priceCents) : "",
+    };
 
-  const missing = missingVariables(template.body, values);
-  if (missing.length > 0) {
-    return Response.json(
-      {
-        ok: false,
-        errors: {
-          templateKey: `This template needs ${missing.join(", ")}, which this member has no value for.`,
+    const missing = missingVariables(template.body, values);
+    if (missing.length > 0) {
+      return Response.json(
+        {
+          ok: false,
+          errors: {
+            templateKey: `This template needs ${missing.join(", ")}, which this member has no value for.`,
+          },
         },
-      },
-      { status: 422 }
-    );
-  }
+        { status: 422 }
+      );
+    }
 
-  const rendered = renderTemplate(template.body, values);
-  if (!isSendableBody(rendered)) {
-    return Response.json(
-      { ok: false, error: "The rendered message is empty or too long to send." },
-      { status: 422 }
-    );
+    const rendered = renderTemplate(template.body, values);
+    if (!isSendableBody(rendered)) {
+      return Response.json(
+        { ok: false, error: "The rendered message is empty or too long to send." },
+        { status: 422 }
+      );
+    }
+
+    renderedBody = rendered;
   }
 
   try {
     const message = await logMessage({
       memberId: member.id,
+      ruleId: body.ruleId ?? null,
       templateKey: template.key,
+      period,
       toPhone: member.phone,
-      renderedBody: rendered,
-      status: "sent",
+      renderedBody,
+      status,
     });
 
-    return Response.json(
-      { ok: true, message, rendered, link: buildWhatsAppLink(member.phone, rendered) },
-      { status: 201 }
-    );
+    return Response.json({ ok: true, message }, { status: 201 });
   } catch (error) {
     if (error instanceof DuplicateMessageError) {
       return Response.json({ ok: false, error: error.message }, { status: 409 });

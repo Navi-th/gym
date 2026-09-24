@@ -8,10 +8,17 @@ export type LogMessageInput = {
   memberId: string;
   ruleId?: string | null;
   templateKey: string;
+  /** The membership end date this message is about. null when there is none. */
+  period: string | null;
   toPhone: string;
-  renderedBody: string;
+  /** null for a `skipped` row — nothing was sent, so there is no body to dispute. */
+  renderedBody: string | null;
   channel?: string;
-  status?: MessageStatus;
+  /**
+   * Required, and deliberately NOT defaulted. A default of "sent" is exactly how
+   * this ledger came to claim messages that were never handed to WhatsApp.
+   */
+  status: MessageStatus;
 };
 
 export async function logMessage(input: LogMessageInput): Promise<Message> {
@@ -21,6 +28,7 @@ export async function logMessage(input: LogMessageInput): Promise<Message> {
     memberId: input.memberId,
     ruleId: input.ruleId,
     templateKey: input.templateKey,
+    period: input.period,
   });
 
   try {
@@ -34,7 +42,7 @@ export async function logMessage(input: LogMessageInput): Promise<Message> {
         dedupeKey,
         toPhone: input.toPhone,
         channel: input.channel ?? "whatsapp",
-        status: input.status ?? "sent",
+        status: input.status,
         renderedBody: input.renderedBody,
         sentAt: new Date().toISOString(),
         createdAt: new Date().toISOString(),

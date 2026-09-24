@@ -7,7 +7,11 @@
 
 // --- data access -----------------------------------------------------------
 export { logMessage, type LogMessageInput } from "./api/log-message";
-export { getMessages, getSentTemplateKeys, type MessageWithMember } from "./api/get-messages";
+export {
+  getBlockedDedupeKeys,
+  getMessages,
+  type MessageWithMember,
+} from "./api/get-messages";
 export {
   getMessageTemplateByKey,
   getMessageTemplates,
