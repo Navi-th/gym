@@ -2,7 +2,6 @@ import Link from "next/link";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
   TBody,
@@ -25,24 +24,13 @@ import { formatMoneyCompact } from "@/shared/lib";
  * toggle. Duplicating the table for the second mode would mean two places to
  * update whenever a column changes.
  */
-export function PlansTable({
-  plans,
-  manage = false,
-  description,
-}: {
-  plans: Plan[];
-  manage?: boolean;
-  description?: string;
-}) {
+export function PlansTable({ plans, manage = false }: { plans: Plan[]; manage?: boolean }) {
   const columnCount = manage ? 6 : 3;
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Plans</CardTitle>
-        <CardDescription>
-          {description ?? "Price shown is the amount charged per billing period."}
-        </CardDescription>
       </CardHeader>
       <CardContent className="p-0">
         <Table className="min-w-0">

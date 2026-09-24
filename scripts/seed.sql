@@ -5,7 +5,7 @@
 -- Plans ---------------------------------------------------------------------
 INSERT OR REPLACE INTO plans (id, name, price_cents, duration_days, billing_period, is_active, created_at) VALUES
   ('plan_starter', '1 Month', 90000, 30, 'monthly', 1, CURRENT_TIMESTAMP),
-  ('plan_pro',     '3 Months', 240000, 90, 'quarterly', 1, CURRENT_TIMESTAMP);
+  ('plan_pro',     '3 Months', 240000, 90, 'monthly', 1, CURRENT_TIMESTAMP);
 
 -- Message templates --------------------------------------------------------
 INSERT OR REPLACE INTO message_templates (id, key, language, category, body, variables) VALUES

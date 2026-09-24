@@ -8,15 +8,16 @@ import { CURRENCY_SYMBOL } from "@/shared/config";
  * edge of the UI — never the other way round.
  */
 
-/** 6900 -> "₹69.00" */
+/** 90000 -> "₹900", 240000 -> "₹2,400" */
 export function formatMoney(cents: number, currency = CURRENCY_SYMBOL): string {
-  return `${currency}${(cents / 100).toFixed(2)}`;
+  const value = cents / 100;
+  return `${currency}${Number.isInteger(value) ? value.toLocaleString("en-IN") : value.toFixed(2)}`;
 }
 
-/** 6900 -> "₹69" (drops .00 for compact table cells and KPI tiles) */
+/** 90000 -> "₹900" (compact formatting for table cells and KPI tiles) */
 export function formatMoneyCompact(cents: number, currency = CURRENCY_SYMBOL): string {
   const value = cents / 100;
-  return `${currency}${Number.isInteger(value) ? value : value.toFixed(2)}`;
+  return `${currency}${Number.isInteger(value) ? value.toLocaleString("en-IN") : value.toFixed(2)}`;
 }
 
 const MONTHS_SHORT = [

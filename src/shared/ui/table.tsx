@@ -2,8 +2,8 @@ import { cn } from "@/shared/lib";
 
 export function Table({ className, ...props }: React.TableHTMLAttributes<HTMLTableElement>) {
   return (
-    <div className="w-full overflow-x-auto no-scrollbar -mx-3.5 px-3.5 sm:mx-0 sm:px-0">
-      <table className={cn("w-full min-w-[580px] sm:min-w-[640px] border-collapse text-left", className)} {...props} />
+    <div className="w-full overflow-x-auto no-scrollbar">
+      <table className={cn("w-full min-w-full sm:min-w-[640px] border-collapse text-left", className)} {...props} />
     </div>
   );
 }
