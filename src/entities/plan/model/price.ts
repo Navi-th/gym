@@ -23,11 +23,11 @@ export function parsePriceToCents(input: string): number | null {
   return Number(whole) * 100 + Number(cents);
 }
 
-/** 6900 -> "69.00" — for prefilling a price input. */
+/** 90000 -> "900" — for prefilling a price input in Rupees. */
 export function centsToPriceInput(cents: number): string {
   const whole = Math.trunc(cents / 100);
   const fraction = Math.abs(cents % 100);
-  return `${whole}.${String(fraction).padStart(2, "0")}`;
+  return fraction === 0 ? String(whole) : `${whole}.${String(fraction).padStart(2, "0")}`;
 }
 
 /**

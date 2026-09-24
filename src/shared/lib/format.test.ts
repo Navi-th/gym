@@ -8,10 +8,10 @@ import {
 } from "./format";
 
 describe("money", () => {
-  it("renders minor units as major units, two decimals", () => {
-    expect(formatMoney(6900)).toBe("₹69.00");
-    expect(formatMoney(118800)).toBe("₹1188.00");
-    expect(formatMoney(0)).toBe("₹0.00");
+  it("renders minor units as major units, clean Rupees without trailing decimal zeros", () => {
+    expect(formatMoney(6900)).toBe("₹69");
+    expect(formatMoney(118800)).toBe("₹1,188");
+    expect(formatMoney(0)).toBe("₹0");
     expect(formatMoney(5)).toBe("₹0.05");
   });
 
@@ -21,7 +21,7 @@ describe("money", () => {
   });
 
   it("accepts an override currency", () => {
-    expect(formatMoney(6900, "$")).toBe("$69.00");
+    expect(formatMoney(6900, "$")).toBe("$69");
   });
 
   it("never produces floating point artefacts", () => {

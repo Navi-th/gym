@@ -109,17 +109,17 @@ export function PlanForm({
         </Field>
 
         <Field
-          label="Price"
+          label="Price (₹)"
           htmlFor="price"
           error={errors.priceCents}
-          hint={price ? `Charged per period — stored as ${parsePriceToCents(price) ?? "?"} minor units` : "Amount charged per billing period"}
+          hint="Amount in Rupees (₹) charged per period"
         >
           <Input
             id="price"
             inputMode="decimal"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
-            placeholder="69.00"
+            placeholder="900"
           />
         </Field>
 
