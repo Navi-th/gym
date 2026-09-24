@@ -35,9 +35,9 @@ export async function listMembersHandler(request: Request) {
 
 /** POST /admin/api/members */
 export async function createMemberHandler(request: Request) {
-  let body: Partial<MemberInput> & { planId?: string; paymentMethod?: string };
+  let body: Partial<MemberInput> & { planId?: string; paymentMethod?: string; startDate?: string };
   try {
-    body = (await request.json()) as Partial<MemberInput> & { planId?: string; paymentMethod?: string };
+    body = (await request.json()) as Partial<MemberInput> & { planId?: string; paymentMethod?: string; startDate?: string };
   } catch {
     return Response.json({ ok: false, error: "Invalid JSON body." }, { status: 400 });
   }
@@ -60,6 +60,7 @@ export async function createMemberHandler(request: Request) {
           durationDays: plan.durationDays,
           priceCents: plan.priceCents,
           paymentMethod: method,
+          startDate: typeof body.startDate === "string" ? body.startDate : undefined,
         });
       }
     }

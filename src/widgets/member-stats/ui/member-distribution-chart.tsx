@@ -28,7 +28,10 @@ export function MemberDistributionChart({ counts }: MemberDistributionChartProps
     { name: STATUS_LABELS.expired, value: counts.expired, color: STATUS_COLORS.expired },
   ].filter((item) => item.value > 0);
 
-  const total = Object.values(counts).reduce((sum, n) => sum + n, 0);
+  const total = Object.values(counts).reduce(
+    (sum, n) => (typeof n === "number" && !Number.isNaN(n) ? sum + n : sum),
+    0
+  );
 
   return (
     <div className="flex flex-col md:flex-row items-center justify-between gap-6 rounded-[24px] border border-slate-100 bg-white p-6 shadow-sm">

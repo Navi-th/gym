@@ -7,14 +7,14 @@ import { getPlanById } from "@/entities/plan";
 
 /** POST /admin/api/subscriptions  { memberId, planId } */
 export async function assignPlanHandler(request: Request) {
-  let body: { memberId?: string; planId?: string };
+  let body: { memberId?: string; planId?: string; startDate?: string; paymentMethod?: string };
   try {
     body = await request.json();
   } catch {
     return Response.json({ ok: false, error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const { memberId, planId } = body;
+  const { memberId, planId, startDate, paymentMethod } = body;
   const errors: Record<string, string> = {};
   if (!memberId) errors.memberId = "A member is required.";
   if (!planId) errors.planId = "A plan is required.";
@@ -44,6 +44,8 @@ export async function assignPlanHandler(request: Request) {
     planId: plan.id,
     durationDays: plan.durationDays,
     priceCents: plan.priceCents,
+    paymentMethod: (paymentMethod === "upi" ? "upi" : "cash") as "cash" | "upi",
+    startDate: typeof startDate === "string" ? startDate : undefined,
   });
 
   return Response.json({ ok: true }, { status: 201 });

@@ -8,10 +8,15 @@ export async function assignPlanToMember(input: {
   durationDays: number;
   priceCents: number;
   paymentMethod?: "cash" | "upi" | "card" | "bank";
+  startDate?: string;
 }): Promise<void> {
   const db = getDb();
   const today = todayUtc();
-  const endDate = addDays(today, Math.max(0, input.durationDays - 1));
+  const startDate =
+    input.startDate && /^\d{4}-\d{2}-\d{2}/.test(input.startDate)
+      ? input.startDate.slice(0, 10)
+      : today;
+  const endDate = addDays(startDate, Math.max(0, input.durationDays - 1));
 
   const now = new Date().toISOString();
   const paymentId = newId();
@@ -21,7 +26,7 @@ export async function assignPlanToMember(input: {
       .update(membersTable)
       .set({
         planId: input.planId,
-        planStart: today,
+        planStart: startDate,
         planEnd: endDate,
         stage: "active",
         updatedAt: now,
@@ -34,7 +39,7 @@ export async function assignPlanToMember(input: {
       amountCents: input.priceCents,
       method: input.paymentMethod ?? "cash",
       paidAt: today,
-      periodStart: today,
+      periodStart: startDate,
       periodEnd: endDate,
       createdAt: now,
     }),

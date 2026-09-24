@@ -28,22 +28,18 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}/;
  * happily claim "active" for a member whose plan ended last month.
  */
 export function deriveMemberStatus(input: {
-  stage: MemberStage;
+  stage: MemberStage | string;
   planEnd?: string | null;
   today?: Date;
 }): MemberStatus {
   const { stage, planEnd, today = new Date() } = input;
 
   // Manual states win outright — they are set by a human, not by dates.
-  if (stage === "frozen") return stage;
+  if (stage === "frozen") return "frozen";
 
-  // Reaching here, `stage` is "active". With no usable end date there is
-  // nothing for the date rules to say, so honour the explicit stage: an
-  // open-ended membership is real.
-  //
-  // Module 5 sets plan_end when a plan is attached, after which the date
-  // rules take over.
-  if (!planEnd || !ISO_DATE.test(planEnd)) return stage;
+  // Reaching here, with no usable end date there is nothing for the date rules
+  // to say, so treat as active open-ended membership.
+  if (!planEnd || !ISO_DATE.test(planEnd)) return "active";
 
   const todayOnly = today.toISOString().slice(0, 10);
   const endOnly = toDateOnly(planEnd);
@@ -95,7 +91,7 @@ export const STATUS_META: Record<MemberStatus, { label: string; className: strin
 };
 
 /** Any minimal shape carrying a derived status — keeps these helpers reusable. */
-type HasStatus = { status: MemberStatus };
+type HasStatus = { status: MemberStatus | string };
 
 /**
  * Tallies members per status.
@@ -110,7 +106,13 @@ export function countMembersByStatus(list: HasStatus[]): Record<MemberStatus, nu
     expired: 0,
     frozen: 0,
   };
-  for (const m of list) counts[m.status] += 1;
+  for (const m of list) {
+    if (m.status in counts) {
+      counts[m.status as MemberStatus] += 1;
+    } else {
+      counts.active += 1;
+    }
+  }
   return counts;
 }
 
