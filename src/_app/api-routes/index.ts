@@ -20,3 +20,4 @@ export { createPlanHandler, listPlansHandler } from "./plans";
 export { getPlanHandler, updatePlanHandler } from "./plan-by-id";
 export { listPaymentsHandler } from "./payments";
 export { listMessagesHandler, sendMessageHandler } from "./messages";
+export { listRulesHandler, updateRuleHandler } from "./automation-rules";

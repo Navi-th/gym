@@ -1,2 +1,2 @@
-export { SendReminderButton } from "./ui/send-reminder-button";
+export { SendReminderActions, type ReminderTarget } from "./ui/send-reminder-actions";
 export { submitReminder, type SubmitReminderResult } from "./api/submit-reminder";
