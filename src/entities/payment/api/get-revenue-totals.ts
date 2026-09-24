@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { count, like, sum } from "drizzle-orm";
 import { getDb, payments as paymentsTable } from "@/shared/db";
 
@@ -41,4 +42,12 @@ export const getRevenueTotals = cache(async function getRevenueTotals(
     paymentCount: counted[0]?.value ?? 0,
   };
 });
+
+export const getRevenueTotalsCached = (monthPrefix: string) =>
+  unstable_cache(
+    async () => getRevenueTotals(monthPrefix),
+    [`revenue-totals-${monthPrefix}`],
+    { tags: ["payments", "revenue-totals"], revalidate: 300 }
+  )();
+
 

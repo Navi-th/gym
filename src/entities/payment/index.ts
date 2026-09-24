@@ -15,7 +15,11 @@ export {
   type PaymentWithMember,
 } from "./api/get-payments";
 export { getMemberPayments } from "./api/get-member-payments";
-export { getRevenueTotals, type RevenueTotals } from "./api/get-revenue-totals";
+export {
+  getRevenueTotals,
+  getRevenueTotalsCached,
+  type RevenueTotals,
+} from "./api/get-revenue-totals";
 
 // --- model -----------------------------------------------------------------
 export {

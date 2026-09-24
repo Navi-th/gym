@@ -11,6 +11,8 @@ export type DueRowItem = {
   planPriceCents: number;
 };
 
+import { unstable_cache } from "next/cache";
+
 export async function getDuesCount(todayStr: string = todayUtc()): Promise<number> {
   const db = getDb();
   const countResult = await db
@@ -27,6 +29,13 @@ export async function getDuesCount(todayStr: string = todayUtc()): Promise<numbe
 
   return Number(countResult[0]?.count ?? 0);
 }
+
+export const getDuesCountCached = (todayStr: string) =>
+  unstable_cache(
+    async () => getDuesCount(todayStr),
+    [`dues-count-${todayStr}`],
+    { tags: ["dues-count", "members"], revalidate: 300 }
+  )();
 
 export async function getDues(options: {
   page?: number;

@@ -13,7 +13,7 @@ export {
   type MemberSortOption,
   type MemberWithStatus,
 } from "./api/get-members";
-export { getDues, getDuesCount, type DueRowItem } from "./api/get-dues";
+export { getDues, getDuesCount, getDuesCountCached, type DueRowItem } from "./api/get-dues";
 export type { PaginatedResult } from "@/shared/lib";
 export { getMemberById } from "./api/get-member-by-id";
 export { createMember } from "./api/create-member";

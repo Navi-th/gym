@@ -1,7 +1,7 @@
 /**
  * Public API of the `plan` entity slice.
  */
-export { getPlans, planNameById } from "./api/get-plans";
+export { getPlans, getPlansCached, planNameById } from "./api/get-plans";
 export { getPlanById } from "./api/get-plan-by-id";
 export { createPlan } from "./api/create-plan";
 export { updatePlan } from "./api/update-plan";
