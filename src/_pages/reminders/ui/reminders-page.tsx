@@ -127,9 +127,12 @@ async function RemindersContentSection() {
 
   const blockedKeys = new Set(await getBlockedDedupeKeys(members.map((member) => member.id)));
 
+  const enabledRules = rules.filter((rule) => rule.isEnabled);
+  const activeRules = enabledRules.length > 0 ? enabledRules : rules;
+
   const entries = buildQueue({
     members,
-    rules: rules.filter((rule) => rule.isEnabled),
+    rules: activeRules,
     templates,
     plans,
     blockedKeys,
@@ -139,8 +142,6 @@ async function RemindersContentSection() {
   return (
     <>
       <SendQueue entries={entries} />
-
-      <AutomationRulesCard rules={rules} templates={templates} />
 
       <Card>
         <CardHeader>
