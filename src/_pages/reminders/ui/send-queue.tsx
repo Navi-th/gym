@@ -85,9 +85,6 @@ export function SendQueue({ entries }: { entries: SendQueueEntry[] }) {
         <div className="flex items-center justify-between gap-3">
           <div>
             <CardTitle>Today&apos;s reminders</CardTitle>
-            <CardDescription>
-              Click &quot;Send on WhatsApp&quot; to open WhatsApp with the message ready. Skip to pass on a member.
-            </CardDescription>
           </div>
           <span className="shrink-0 rounded-full border border-emerald-300 bg-emerald-50 px-3.5 py-1 text-xs font-bold text-emerald-800">
             {remainingCount} pending

@@ -126,9 +126,6 @@ export function PaymentsPage({
     <div className="mx-auto max-w-6xl space-y-5">
       <header>
         <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-900">Payments</h1>
-        <p className="mt-1 text-xs sm:text-sm text-zinc-500 font-medium">
-          Totals reflect money recorded, which is not the same as revenue earned.
-        </p>
       </header>
 
       <Suspense

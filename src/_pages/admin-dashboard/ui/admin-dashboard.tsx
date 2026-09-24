@@ -60,9 +60,6 @@ export function AdminDashboardPage() {
               Gym Dashboard
             </h1>
           </div>
-          <p className="mt-1 text-xs sm:text-sm text-slate-500 font-medium">
-            Real-time membership status & subscription renewals console.
-          </p>
         </div>
 
         <div className="flex items-center gap-2">

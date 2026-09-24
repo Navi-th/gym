@@ -1,7 +1,6 @@
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
   TBody,
@@ -21,10 +20,6 @@ export function MessagesTable({ messages }: { messages: MessageWithMember[] }) {
     <Card>
       <CardHeader>
         <CardTitle>Sent messages</CardTitle>
-        <CardDescription>
-          The exact wording that went out is stored, so a dispute has an answer.
-          A duplicate is refused by the database, not by a check somebody has to remember.
-        </CardDescription>
       </CardHeader>
       <CardContent className="p-0">
         <Table>

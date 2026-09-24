@@ -17,11 +17,7 @@ async function PlansListSection() {
       </p>
 
       <div className="mt-4">
-        <PlansTable
-          plans={plans}
-          manage
-          description="Duration drives every subscription expiry. Edits affect future assignments only."
-        />
+        <PlansTable plans={plans} manage />
       </div>
     </>
   );

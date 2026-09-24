@@ -1,12 +1,5 @@
 import { Suspense } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  Skeleton,
-} from "@/shared/ui";
+import { Card, CardContent, CardHeader, CardTitle, Skeleton } from "@/shared/ui";
 import { getAllMembers, type MemberWithStatus } from "@/entities/member";
 import { getRules, selectDueForRule, type AutomationRule } from "@/entities/automation";
 import {
@@ -146,9 +139,6 @@ async function RemindersContentSection() {
       <Card>
         <CardHeader>
           <CardTitle>Templates</CardTitle>
-          <CardDescription>
-            Mirrors what must be registered with Meta. Utility-category and factual in tone.
-          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
           {templates.map((template) => (
@@ -178,9 +168,6 @@ export function RemindersPage() {
     <div className="mx-auto max-w-6xl space-y-5">
       <header>
         <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-900">Reminders</h1>
-        <p className="mt-1 text-xs sm:text-sm text-zinc-500 font-medium leading-relaxed">
-          Sends open WhatsApp with the message ready. Consent must be recorded on the member first.
-        </p>
       </header>
 
       <Suspense
