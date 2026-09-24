@@ -72,6 +72,7 @@ export const members = sqliteTable(
     index("idx_members_phone").on(t.phone),
     index("idx_members_plan_end").on(t.planEnd),
     index("idx_members_stage").on(t.stage),
+    index("idx_members_dues").on(t.deletedAt, t.stage, t.planEnd),
   ]
 );
 
@@ -96,7 +97,10 @@ export const payments = sqliteTable(
       .notNull()
       .default(sql`(datetime('now'))`),
   },
-  (t) => [index("idx_payments_member").on(t.memberId)]
+  (t) => [
+    index("idx_payments_member").on(t.memberId),
+    index("idx_payments_paid_at").on(t.paidAt),
+  ]
 );
 
 // ---------------------------------------------------------------------------
