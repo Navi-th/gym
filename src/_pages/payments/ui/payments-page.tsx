@@ -1,9 +1,9 @@
 import { Suspense } from "react";
 import { Wallet, TrendingUp, Receipt, AlertCircle } from "lucide-react";
 import { Card, CardContent, Pagination, Skeleton, TableSkeleton } from "@/shared/ui";
-import { getAllMembers } from "@/entities/member";
-import { getPlans, planNameById } from "@/entities/plan";
-import { getPayments, getRevenueTotals, selectDues } from "@/entities/payment";
+import { getDues, getDuesCountCached } from "@/entities/member";
+import { getPlansCached } from "@/entities/plan";
+import { getPayments, getRevenueTotalsCached } from "@/entities/payment";
 import { DuesTable, type DueRow } from "@/widgets/dues-table";
 import { PaymentsTable } from "@/widgets/payments-table";
 import { formatMoneyCompact, todayUtc } from "@/shared/lib";
@@ -19,28 +19,15 @@ async function PaymentsContentSection({
   const today = todayUtc();
   const pageSize = 10;
 
-  const [members, plans, paymentsResult, totals] = await Promise.all([
-    getAllMembers(),
-    getPlans(),
+  const [plans, paymentsResult, totals, duesCount, duesResult] = await Promise.all([
+    getPlansCached(),
     getPayments({ page, pageSize }),
-    getRevenueTotals(today.slice(0, 7)),
+    getRevenueTotalsCached(today.slice(0, 7)),
+    getDuesCountCached(today),
+    getDues({ page: 1, pageSize: 50, todayStr: today }),
   ]);
 
-  const planNames = planNameById(plans);
-  const planById = new Map(plans.map((p) => [p.id, p]));
-
-  const dues: DueRow[] = selectDues(members, today).map((member) => {
-    const plan = member.planId ? planById.get(member.planId) : undefined;
-
-    return {
-      memberId: member.id,
-      memberName: member.fullName,
-      memberCode: member.memberCode,
-      planEnd: member.planEnd as string,
-      planName: planNames.get(member.planId ?? "") ?? "—",
-      planPriceCents: plan?.priceCents ?? 0,
-    };
-  });
+  const dues: DueRow[] = duesResult.data;
 
   const stats = [
     {
@@ -63,8 +50,8 @@ async function PaymentsContentSection({
     },
     {
       label: "In arrears",
-      value: String(dues.length),
-      tone: dues.length > 0 ? "text-rose-600" : "text-emerald-600",
+      value: String(duesCount),
+      tone: duesCount > 0 ? "text-rose-600" : "text-emerald-600",
       icon: <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rose-600" />,
     },
   ];
@@ -107,7 +94,7 @@ async function PaymentsContentSection({
 
       <PaymentsTabs
         historyCount={paymentsResult.totalCount}
-        duesCount={dues.length}
+        duesCount={duesCount}
         historyContent={historyContent}
         arrearsContent={arrearsContent}
       />
